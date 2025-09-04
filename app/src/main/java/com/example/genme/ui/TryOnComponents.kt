@@ -8,20 +8,26 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Warning
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.*
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.PopupProperties
 import coil.compose.AsyncImage
 import com.example.genme.viewmodel.TryOnUiState
 
@@ -513,6 +519,185 @@ fun ResultCard(
                             color = Color(0xFF06D6A0),
                             letterSpacing = 1.sp
                         )
+                    }
+                }
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun FuturisticDropdown(
+    selectedValue: String,
+    options: List<String>,
+    label: String,
+    onValueChange: (String) -> Unit,
+    enabled: Boolean = true,
+    modifier: Modifier = Modifier
+) {
+    var expanded by remember { mutableStateOf(false) }
+    var searchText by remember { mutableStateOf("") }
+    
+    Column(
+        modifier = modifier.fillMaxWidth()
+    ) {
+        // Label
+        Text(
+            text = label,
+            fontSize = 12.sp,
+            fontWeight = FontWeight.Medium,
+            color = if (enabled) Color(0xFF00D4FF) else Color(0xFF6B7280),
+            modifier = Modifier.padding(bottom = 8.dp)
+        )
+        
+        // Dropdown trigger
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable(enabled = enabled) { expanded = !expanded },
+            shape = RoundedCornerShape(16.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = Color(0xFF0D1117)
+            ),
+            border = BorderStroke(
+                1.5.dp, 
+                if (enabled) {
+                    if (expanded) Color(0xFF00D4FF) else Color(0xFF374151)
+                } else Color(0xFF2D3748)
+            ),
+            elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(
+                        brush = Brush.horizontalGradient(
+                            colors = if (enabled && expanded) {
+                                listOf(
+                                    Color(0xFF00D4FF).copy(alpha = 0.1f),
+                                    Color.Transparent
+                                )
+                            } else {
+                                listOf(
+                                    Color(0xFF161B22),
+                                    Color(0xFF0D1117)
+                                )
+                            }
+                        )
+                    )
+                    .padding(16.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = selectedValue,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = if (enabled) Color.White else Color(0xFF6B7280),
+                    modifier = Modifier.weight(1f)
+                )
+                
+                Icon(
+                    imageVector = if (expanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
+                    contentDescription = if (expanded) "Collapse" else "Expand",
+                    tint = if (enabled) Color(0xFF00D4FF) else Color(0xFF6B7280),
+                    modifier = Modifier.size(20.dp)
+                )
+            }
+        }
+        
+        // Dropdown menu
+        if (expanded) {
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .heightIn(max = 200.dp),
+                shape = RoundedCornerShape(16.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = Color(0xFF0D1117)
+                ),
+                border = BorderStroke(1.5.dp, Color(0xFF00D4FF)),
+                elevation = CardDefaults.cardElevation(defaultElevation = 12.dp)
+            ) {
+                Column(
+                    modifier = Modifier
+                        .background(
+                            brush = Brush.verticalGradient(
+                                colors = listOf(
+                                    Color(0xFF161B22),
+                                    Color(0xFF0D1117)
+                                )
+                            )
+                        )
+                        .padding(4.dp)
+                ) {
+                    TextField(
+                        value = searchText,
+                        onValueChange = { searchText = it },
+                        placeholder = { Text("Search...", color = Color(0xFF6B7280)) },
+                        colors = TextFieldDefaults.colors(
+                            focusedContainerColor = Color.Transparent,
+                            unfocusedContainerColor = Color.Transparent,
+                            disabledContainerColor = Color.Transparent,
+                            focusedIndicatorColor = Color(0xFF00D4FF),
+                            unfocusedIndicatorColor = Color(0xFF374151)
+                        ),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp, vertical = 8.dp)
+                    )
+                    LazyColumn {
+                        items(options.filter { it.contains(searchText, ignoreCase = true) }) { option ->
+                            val isSelected = option == selectedValue
+                            
+                            Card(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(2.dp)
+                                    .clickable {
+                                        onValueChange(option)
+                                        expanded = false
+                                        searchText = ""
+                                    },
+                                shape = RoundedCornerShape(12.dp),
+                                colors = CardDefaults.cardColors(
+                                    containerColor = if (isSelected) {
+                                        Color(0xFF00D4FF).copy(alpha = 0.2f)
+                                    } else {
+                                        Color.Transparent
+                                    }
+                                ),
+                                border = if (isSelected) {
+                                    BorderStroke(1.dp, Color(0xFF00D4FF))
+                                } else null
+                            ) {
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(12.dp),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.SpaceBetween
+                                ) {
+                                    Text(
+                                        text = option,
+                                        fontSize = 14.sp,
+                                        fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
+                                        color = if (isSelected) Color(0xFF00D4FF) else Color.White,
+                                        modifier = Modifier.weight(1f)
+                                    )
+                                    
+                                    if (isSelected) {
+                                        Icon(
+                                            imageVector = Icons.Default.Check,
+                                            contentDescription = "Selected",
+                                            tint = Color(0xFF00D4FF),
+                                            modifier = Modifier.size(16.dp)
+                                        )
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
             }

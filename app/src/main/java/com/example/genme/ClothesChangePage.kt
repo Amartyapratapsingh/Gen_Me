@@ -1,5 +1,6 @@
 package com.example.genme
 
+import android.app.Application
 import android.graphics.Bitmap
 import androidx.compose.animation.core.*
 import androidx.compose.animation.animateColor
@@ -43,11 +44,22 @@ import com.example.genme.viewmodel.TryOnViewModel
 import kotlin.math.*
 import kotlin.random.Random
 
+import androidx.lifecycle.ViewModelProvider
+import com.example.genme.viewmodel.TryOnViewModelFactory
+
 @Composable
 fun ClothesChangePage(navController: NavController) {
     val context = LocalContext.current
-    val viewModel = remember { TryOnViewModel(context) }
+    val viewModel: TryOnViewModel = remember {
+        ViewModelProvider(context as androidx.activity.ComponentActivity, TryOnViewModelFactory(context.applicationContext as Application)).get(TryOnViewModel::class.java)
+    }
     val uiState by viewModel.uiState.collectAsState()
+    
+    DisposableEffect(Unit) {
+        onDispose {
+            viewModel.clearImages()
+        }
+    }
     
     // Initialize API health check
     LaunchedEffect(Unit) {
