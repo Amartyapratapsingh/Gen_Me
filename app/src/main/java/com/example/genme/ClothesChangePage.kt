@@ -32,12 +32,14 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
+import com.example.genme.R
 import com.example.genme.ui.*
 import com.example.genme.utils.rememberImagePicker
 import com.example.genme.viewmodel.TryOnViewModel
@@ -75,33 +77,45 @@ fun ClothesChangePage(navController: NavController) {
         uri?.let { viewModel.setClothingImage(it) }
     }
     
-    // Futuristic background - simple and clean
+    // Colors exactly matching homepage
+    val primaryColor = Color(0xFF38E07B)
+    val backgroundColor = Color(0xFF121212)
+    val textSecondary = Color(0xFFB3B3B3)
+    val accentColor = Color(0xFF5CE690)
+    
     Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(
-                brush = Brush.verticalGradient(
-                    colors = listOf(
-                        Color(0xFF1A1A2E), // Dark blue
-                        Color(0xFF16213E), // Darker blue
-                        Color(0xFF0F1419)  // Almost black
-                    )
-                )
-            )
+        modifier = Modifier.fillMaxSize()
     ) {
-        Column(
+        // Background exactly matching homepage - FULL SCREEN NO GAPS
+        Box(
             modifier = Modifier
                 .fillMaxSize()
-                .verticalScroll(rememberScrollState())
-                .padding(24.dp)
+                .background(backgroundColor)
+        )
+        
+        // Dark overlay exactly like homepage - FULL SCREEN + subtle colorful gradients
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.Black.copy(alpha = 0.7f))
         ) {
-            // Futuristic header
-            FuturisticPageHeader(navController, uiState.isApiHealthy)
-            
-            Spacer(modifier = Modifier.height(32.dp))
-            
-            // Futuristic title
-            FuturisticPageTitle()
+            com.example.genme.ui.ColorfulBackdrop(primaryColor = primaryColor, accentColor = accentColor)
+            Column(
+                modifier = Modifier.fillMaxSize()
+            ) {
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .verticalScroll(rememberScrollState())
+                    .padding(24.dp)
+            ) {
+            // Glassmorphic header matching home page
+            GlasmorphicPageHeader(
+                title = "Clothes Changer",
+                subtitle = "Transform your style with AI",
+                navController = navController,
+                primaryColor = primaryColor
+            )
             
             Spacer(modifier = Modifier.height(32.dp))
             
@@ -129,7 +143,7 @@ fun ClothesChangePage(navController: NavController) {
                     subtitle = "Your Photo",
                     description = "Upload your current image for AI analysis",
                     borderColor = Color(0xFF00D4FF),
-                    icon = "📷",
+                    icon = R.drawable.ic_person,
                     selectedImageUri = uiState.personImageUri,
                     onClick = personImagePicker,
                     enabled = !uiState.isLoading
@@ -141,7 +155,7 @@ fun ClothesChangePage(navController: NavController) {
                     subtitle = "Target Clothing",
                     description = "Choose your desired clothing style",
                     borderColor = Color(0xFF8B5CF6),
-                    icon = "👕",
+                    icon = R.drawable.ic_clothing,
                     selectedImageUri = uiState.clothingImageUri,
                     onClick = clothingImagePicker,
                     enabled = !uiState.isLoading
@@ -173,10 +187,21 @@ fun ClothesChangePage(navController: NavController) {
                 )
             }
             
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.height(100.dp)) // Space for bottom nav
+            }
+            
+            // Bottom navigation
+            HtmlStyleBottomNav(
+                primaryColor = primaryColor,
+                textSecondary = textSecondary,
+                navController = navController,
+                currentRoute = "clothes_change"
+            )
+        }
         }
     }
 }
+
 
 @Composable
 fun FuturisticPageHeader(navController: NavController, isApiHealthy: Boolean = true) {
@@ -398,6 +423,5 @@ fun FuturisticPageTitle() {
         }
     }
 }
-
 
 

@@ -26,12 +26,24 @@ import java.nio.charset.StandardCharsets
 fun FullScreenImageViewer(navController: NavController, imagePath: String) {
     val decodedPath = URLDecoder.decode(imagePath, StandardCharsets.UTF_8.toString())
     val imageFile = File(decodedPath)
+    val backgroundColor = Color(0xFF121212)
+    val primaryColor = Color(0xFF38E07B)
+    val accentColor = Color(0xFF5CE690)
 
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.Black)
+            .background(backgroundColor)
     ) {
+        // Dark overlay + subtle gradients, matching the app theme
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.Black.copy(alpha = 0.7f))
+        ) {
+            ColorfulBackdrop(primaryColor = primaryColor, accentColor = accentColor)
+        }
+
         Image(
             painter = rememberAsyncImagePainter(
                 ImageRequest.Builder(LocalContext.current)

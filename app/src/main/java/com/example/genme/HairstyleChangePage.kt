@@ -32,27 +32,29 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
+import com.example.genme.R
 import com.example.genme.ui.*
 import com.example.genme.utils.rememberImagePicker
-import com.example.genme.viewmodel.TryOnViewModel
+import com.example.genme.viewmodel.HairstyleViewModel
+import com.example.genme.viewmodel.HairstyleViewModelFactory
 import kotlin.math.*
 import kotlin.random.Random
 
 import androidx.lifecycle.ViewModelProvider
-import com.example.genme.viewmodel.TryOnViewModelFactory
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HairstyleChangePage(navController: NavController) {
     val context = LocalContext.current
-    val viewModel: TryOnViewModel = remember {
-        ViewModelProvider(context as androidx.activity.ComponentActivity, TryOnViewModelFactory(context.applicationContext as Application)).get(TryOnViewModel::class.java)
+    val viewModel: HairstyleViewModel = remember {
+        ViewModelProvider(context as androidx.activity.ComponentActivity, HairstyleViewModelFactory(context.applicationContext as Application)).get(HairstyleViewModel::class.java)
     }
     val uiState by viewModel.uiState.collectAsState()
     
@@ -72,38 +74,50 @@ fun HairstyleChangePage(navController: NavController) {
         uri?.let { viewModel.setPersonImage(it) }
     }
     
-    // Futuristic background - simple and clean
+    // Colors exactly matching homepage
+    val primaryColor = Color(0xFF38E07B)
+    val backgroundColor = Color(0xFF121212)
+    val textSecondary = Color(0xFFB3B3B3)
+    val accentColor = Color(0xFF5CE690)
+    
     Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(
-                brush = Brush.verticalGradient(
-                    colors = listOf(
-                        Color(0xFF1A1A2E), // Dark blue
-                        Color(0xFF16213E), // Darker blue
-                        Color(0xFF0F1419)  // Almost black
-                    )
-                )
-            )
+        modifier = Modifier.fillMaxSize()
     ) {
-        Column(
+        // Background exactly matching homepage - FULL SCREEN NO GAPS
+        Box(
             modifier = Modifier
                 .fillMaxSize()
-                .verticalScroll(rememberScrollState())
-                .padding(24.dp)
+                .background(backgroundColor)
+        )
+        
+        // Dark overlay exactly like homepage - FULL SCREEN + subtle colorful gradients
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.Black.copy(alpha = 0.7f))
         ) {
-            // Futuristic header
-            FuturisticPageHeader(navController, uiState.isApiHealthy)
-            
-            Spacer(modifier = Modifier.height(32.dp))
-            
-            // Futuristic title
-            FuturisticPageTitle()
+            com.example.genme.ui.ColorfulBackdrop(primaryColor = primaryColor, accentColor = accentColor)
+            Column(
+                modifier = Modifier.fillMaxSize()
+            ) {
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .verticalScroll(rememberScrollState())
+                    .padding(24.dp)
+            ) {
+            // Glassmorphic header matching home page
+            GlasmorphicPageHeader(
+                title = "Hairstyle Changer",
+                subtitle = "Find your perfect hairstyle with AI",
+                navController = navController,
+                primaryColor = primaryColor
+            )
             
             Spacer(modifier = Modifier.height(32.dp))
             
             // Progress indicator
-            TryOnProgressIndicator(uiState)
+            HairstyleProgressIndicator(uiState)
             
             Spacer(modifier = Modifier.height(32.dp))
             
@@ -126,7 +140,7 @@ fun HairstyleChangePage(navController: NavController) {
                     subtitle = "Upload a photo",
                     description = "Upload an image to try on a new hairstyle",
                     borderColor = Color(0xFF00D4FF),
-                    icon = "📷",
+                    icon = R.drawable.ic_person,
                     selectedImageUri = uiState.personImageUri,
                     onClick = personImagePicker,
                     enabled = !uiState.isLoading
@@ -144,11 +158,19 @@ fun HairstyleChangePage(navController: NavController) {
                 )
                 var selectedHairstyle by remember { mutableStateOf(hairstyles[0]) }
                 
+                // Initialize hairstyle text in ViewModel
+                LaunchedEffect(Unit) {
+                    viewModel.setHairstyleText(hairstyles[0])
+                }
+                
                 FuturisticDropdown(
                     selectedValue = selectedHairstyle,
                     options = hairstyles,
                     label = "Hairstyle",
-                    onValueChange = { selectedHairstyle = it },
+                    onValueChange = { 
+                        selectedHairstyle = it
+                        viewModel.setHairstyleText(it)
+                    },
                     enabled = !uiState.isLoading
                 )
             }
@@ -157,10 +179,10 @@ fun HairstyleChangePage(navController: NavController) {
             
             // Transform button
             TransformButton(
-                enabled = uiState.personImageUri != null && !uiState.isLoading,
+                enabled = uiState.canStartHairstyleChange,
                 isLoading = uiState.isLoading,
                 loadingMessage = uiState.loadingMessage,
-                onClick = { }
+                onClick = { viewModel.startHairstyleChange() }
             )
             
             Spacer(modifier = Modifier.height(24.dp))
@@ -178,7 +200,17 @@ fun HairstyleChangePage(navController: NavController) {
                 )
             }
             
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.height(100.dp)) // Space for bottom nav
+            }
+            
+            // Bottom navigation
+            HtmlStyleBottomNav(
+                primaryColor = primaryColor,
+                textSecondary = textSecondary,
+                navController = navController,
+                currentRoute = "hairstyle_change"
+            )
+        }
         }
     }
 }

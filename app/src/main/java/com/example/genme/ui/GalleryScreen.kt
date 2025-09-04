@@ -43,99 +43,130 @@ fun GalleryScreen(
     val images by viewModel.galleryImages.collectAsState()
     val uiState by viewModel.uiState.collectAsState()
 
+    // Colors exactly matching homepage
+    val primaryColor = Color(0xFF38E07B)
+    val backgroundColor = Color(0xFF121212)
+    val textSecondary = Color(0xFFB3B3B3)
+    val accentColor = Color(0xFF5CE690)
+    
     Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(
-                brush = Brush.verticalGradient(
-                    colors = listOf(
-                        Color(0xFF1A1A2E), // Dark blue
-                        Color(0xFF16213E), // Darker blue
-                        Color(0xFF0F1419)  // Almost black
-                    )
-                )
-            )
+        modifier = Modifier.fillMaxSize()
     ) {
-        Column {
-            Text(
-                text = "Gallery",
-                style = MaterialTheme.typography.headlineLarge,
-                fontWeight = FontWeight.Bold,
-                color = Color.White,
-                modifier = Modifier.padding(16.dp)
+        // Background exactly matching homepage - FULL SCREEN NO GAPS
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(backgroundColor)
+        )
+        
+        // Dark overlay exactly like homepage - FULL SCREEN + subtle colorful gradients
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.Black.copy(alpha = 0.7f))
+        ) {
+        com.example.genme.ui.ColorfulBackdrop(primaryColor = primaryColor, accentColor = accentColor)
+        Column(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            // Glassmorphic header matching other pages
+            GlasmorphicPageHeader(
+                title = "Gallery",
+                subtitle = "Your saved creations",
+                navController = navController,
+                primaryColor = primaryColor
             )
-            if (uiState.errorMessage != null) {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(text = uiState.errorMessage ?: "Failed to load images.", color = Color.White)
-                }
-            } else if (images.isEmpty()) {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(text = "No images found.", color = Color.White)
-                }
-            } else {
-                LazyVerticalGrid(
-                    columns = GridCells.Adaptive(minSize = 128.dp),
-                    modifier = Modifier.padding(horizontal = 8.dp),
-                    contentPadding = PaddingValues(8.dp)
-                ) {
-                    items(images) { imageFile ->
-                        FuturisticImageCard(
-                            imageFile = imageFile,
-                            onClick = {
-                                val encodedPath = URLEncoder.encode(imageFile.absolutePath, StandardCharsets.UTF_8.toString())
-                                navController.navigate("full_screen_image/$encodedPath")
-                            }
-                        )
+            
+            Spacer(modifier = Modifier.height(32.dp))
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(horizontal = 24.dp)
+            ) {
+                if (uiState.errorMessage != null) {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(text = uiState.errorMessage ?: "Failed to load images.", color = Color.White)
+                    }
+                } else if (images.isEmpty()) {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(text = "No images found.", color = Color.White)
+                    }
+                } else {
+                    LazyVerticalGrid(
+                        columns = GridCells.Adaptive(minSize = 128.dp),
+                        contentPadding = PaddingValues(8.dp)
+                    ) {
+                        items(images) { imageFile ->
+                            GlasmorphicImageCard(
+                                imageFile = imageFile,
+                                onClick = {
+                                    val encodedPath = URLEncoder.encode(imageFile.absolutePath, StandardCharsets.UTF_8.toString())
+                                    navController.navigate("full_screen_image/$encodedPath")
+                                }
+                            )
+                        }
                     }
                 }
+                
+                Spacer(modifier = Modifier.height(100.dp)) // Space for bottom nav
             }
-            Spacer(modifier = Modifier.weight(1f))
-            FuturisticBottomNav(navController = navController, currentRoute = "gallery")
+            
+            // Bottom navigation
+            HtmlStyleBottomNav(
+                primaryColor = primaryColor,
+                textSecondary = textSecondary,
+                navController = navController,
+                currentRoute = "gallery"
+            )
+        }
         }
     }
 }
 
 @Composable
-fun FuturisticImageCard(imageFile: File, onClick: () -> Unit) {
+fun GlasmorphicImageCard(imageFile: File, onClick: () -> Unit) {
     Card(
         modifier = Modifier
             .padding(8.dp)
             .clickable(onClick = onClick),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
-            containerColor = Color(0xFF0D1117)
+            containerColor = Color(0x80282828) // Glassmorphic background
         ),
-        border = BorderStroke(
-            width = 1.5.dp,
-            brush = Brush.linearGradient(
-                colors = listOf(
-                    Color(0xFF00D4FF).copy(alpha = 0.7f),
-                    Color(0xFF6366F1).copy(alpha = 0.8f),
-                    Color(0xFF8B5CF6).copy(alpha = 0.6f)
-                )
-            )
-        ),
+        border = BorderStroke(1.dp, Color.White.copy(alpha = 0.1f)),
         elevation = CardDefaults.cardElevation(
             defaultElevation = 8.dp
         )
     ) {
-        Image(
-            painter = rememberAsyncImagePainter(
-                ImageRequest.Builder(LocalContext.current)
-                    .data(data = imageFile)
-                    .build()
-            ),
-            contentDescription = null,
+        Box(
             modifier = Modifier
-                .aspectRatio(1f)
-                .clip(RoundedCornerShape(16.dp)),
-            contentScale = ContentScale.Crop
-        )
+                .background(
+                    brush = Brush.verticalGradient(
+                        colors = listOf(
+                            Color(0x80282828),
+                            Color(0x60202020)
+                        )
+                    )
+                )
+        ) {
+            Image(
+                painter = rememberAsyncImagePainter(
+                    ImageRequest.Builder(LocalContext.current)
+                        .data(data = imageFile)
+                        .build()
+                ),
+                contentDescription = null,
+                modifier = Modifier
+                    .aspectRatio(1f)
+                    .clip(RoundedCornerShape(16.dp)),
+                contentScale = ContentScale.Crop
+            )
+        }
     }
 }
