@@ -4,6 +4,7 @@ import android.graphics.Bitmap
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -11,10 +12,15 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Warning
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -24,12 +30,19 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.*
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.vectorResource
+import androidx.navigation.NavController
 import androidx.compose.ui.window.PopupProperties
 import coil.compose.AsyncImage
+import com.example.genme.R
 import com.example.genme.viewmodel.TryOnUiState
+import com.example.genme.viewmodel.HairstyleUiState
 
 @Composable
 fun TryOnProgressIndicator(uiState: TryOnUiState) {
@@ -41,6 +54,31 @@ fun TryOnProgressIndicator(uiState: TryOnUiState) {
             val isActive = when (index) {
                 0 -> true // Image selection is always first step
                 1 -> uiState.hasAllImages || uiState.isLoading || uiState.hasResult
+                2 -> uiState.hasResult
+                else -> false
+            }
+            Box(
+                modifier = Modifier
+                    .size(8.dp)
+                    .background(
+                        color = if (isActive) Color(0xFF00D4FF) else Color(0xFF374151),
+                        shape = CircleShape
+                    )
+            )
+        }
+    }
+}
+
+@Composable
+fun HairstyleProgressIndicator(uiState: HairstyleUiState) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceEvenly
+    ) {
+        repeat(3) { index ->
+            val isActive = when (index) {
+                0 -> true // Image selection is always first step
+                1 -> uiState.hasAllInputs || uiState.isLoading || uiState.hasResult
                 2 -> uiState.hasResult
                 else -> false
             }
@@ -121,7 +159,7 @@ fun ImageUploadCard(
     subtitle: String,
     description: String,
     borderColor: Color,
-    icon: String,
+    icon: Int,
     selectedImageUri: android.net.Uri?,
     onClick: () -> Unit,
     enabled: Boolean = true
@@ -232,9 +270,11 @@ fun ImageUploadCard(
                         modifier = Modifier.fillMaxSize(),
                         contentAlignment = Alignment.Center
                     ) {
-                        Text(
-                            text = icon,
-                            fontSize = 24.sp
+                        Icon(
+                            painter = painterResource(id = icon),
+                            contentDescription = title,
+                            tint = borderColor,
+                            modifier = Modifier.size(24.dp)
                         )
                     }
                 }
@@ -701,6 +741,252 @@ fun FuturisticDropdown(
                     }
                 }
             }
+        }
+    }
+}
+
+@Composable
+fun GlasmorphicPageHeader(
+    title: String,
+    subtitle: String,
+    navController: NavController,
+    primaryColor: Color
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        // Back button with glassmorphic style
+        Card(
+            modifier = Modifier
+                .size(48.dp)
+                .clickable { navController.popBackStack() },
+            shape = CircleShape,
+            colors = CardDefaults.cardColors(
+                containerColor = Color(0x80282828)
+            ),
+            border = BorderStroke(1.dp, Color.White.copy(alpha = 0.1f)),
+            elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(
+                        brush = Brush.radialGradient(
+                            colors = listOf(
+                                Color.White.copy(alpha = 0.1f),
+                                Color.Transparent
+                            )
+                        )
+                    ),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = Icons.Default.ArrowBack,
+                    contentDescription = "Back",
+                    tint = Color.White,
+                    modifier = Modifier.size(24.dp)
+                )
+            }
+        }
+        
+        // Title section
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = title,
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.White,
+                textAlign = TextAlign.Center
+            )
+            Text(
+                text = subtitle,
+                fontSize = 12.sp,
+                color = Color.White.copy(alpha = 0.7f),
+                textAlign = TextAlign.Center
+            )
+        }
+        
+        // Spacer to balance the layout
+        Spacer(modifier = Modifier.size(48.dp))
+    }
+}
+
+@Composable
+fun HtmlStyleBottomNav(
+    primaryColor: Color,
+    textSecondary: Color,
+    navController: NavController,
+    currentRoute: String = ""
+) {
+    // Bottom nav with glassmorphic card styling
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp) // Margin around the card
+    ) {
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(24.dp), // Rounded corners
+            colors = CardDefaults.cardColors(
+                containerColor = Color(0x80282828) // Glassmorphic background
+            ),
+            border = BorderStroke(1.dp, Color.White.copy(alpha = 0.1f)),
+            elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(
+                        brush = Brush.verticalGradient(
+                            colors = listOf(
+                                Color(0x80282828),
+                                Color(0x60202020)
+                            )
+                        )
+                    )
+                    .padding(horizontal = 8.dp, vertical = 8.dp) // Inner padding
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceEvenly
+                ) {
+                    HtmlBottomNavItem(
+                        iconType = "home",
+                        label = "Home",
+                        isSelected = currentRoute == "landing_page" || currentRoute == "home" || currentRoute.isEmpty(),
+                        primaryColor = primaryColor,
+                        textSecondary = textSecondary,
+                        onClick = { 
+                            navController.navigate("landing_page") {
+                                // Clear the back stack to prevent crashes when going back to home
+                                popUpTo("landing_page") { inclusive = true }
+                                launchSingleTop = true
+                            }
+                        }
+                    )
+                    
+                    HtmlBottomNavItem(
+                        iconType = "gallery",
+                        label = "Gallery",
+                        isSelected = currentRoute == "gallery",
+                        primaryColor = primaryColor,
+                        textSecondary = textSecondary,
+                        onClick = { 
+                            navController.navigate("gallery") {
+                                launchSingleTop = true
+                            }
+                        }
+                    )
+                    
+                    HtmlBottomNavItem(
+                        iconType = "profile",
+                        label = "Profile",
+                        isSelected = currentRoute == "profile",
+                        primaryColor = primaryColor,
+                        textSecondary = textSecondary,
+                        onClick = {
+                            navController.navigate("profile") {
+                                launchSingleTop = true
+                            }
+                        }
+                    )
+                    
+                    HtmlBottomNavItem(
+                        iconType = "settings",
+                        label = "Settings",
+                        isSelected = currentRoute == "settings",
+                        primaryColor = primaryColor,
+                        textSecondary = textSecondary,
+                        onClick = {
+                            navController.navigate("settings") {
+                                launchSingleTop = true
+                            }
+                        }
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun HtmlBottomNavItem(
+    iconType: String,
+    label: String,
+    isSelected: Boolean,
+    primaryColor: Color,
+    textSecondary: Color,
+    onClick: () -> Unit
+) {
+    val interactionSource = remember { MutableInteractionSource() }
+    
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(4.dp),
+        modifier = Modifier
+            .clickable(
+                interactionSource = interactionSource,
+                indication = null,
+                onClick = onClick
+            )
+            .background(
+                color = if (isSelected) primaryColor.copy(alpha = 0.2f) else Color.Transparent,
+                shape = RoundedCornerShape(16.dp)
+            )
+            .padding(horizontal = 12.dp, vertical = 8.dp)
+    ) {
+        // Custom icons to match design
+        HtmlBottomNavIcon(
+            iconType = iconType,
+            tint = if (isSelected) primaryColor else textSecondary
+        )
+        Text(
+            text = label,
+            fontSize = 12.sp,
+            fontWeight = FontWeight.SemiBold,
+            color = if (isSelected) primaryColor else textSecondary
+        )
+    }
+}
+
+@Composable
+fun HtmlBottomNavIcon(iconType: String, tint: Color) {
+    when (iconType) {
+        "home" -> {
+            Icon(
+                imageVector = Icons.Default.Home,
+                contentDescription = "Home",
+                tint = tint,
+                modifier = Modifier.size(24.dp)
+            )
+        }
+        "gallery" -> {
+            Icon(
+                imageVector = ImageVector.vectorResource(id = R.drawable.ic_gallery),
+                contentDescription = "Gallery",
+                tint = tint,
+                modifier = Modifier.size(24.dp)
+            )
+        }
+        "profile" -> {
+            Icon(
+                imageVector = Icons.Default.Person,
+                contentDescription = "Profile",
+                tint = tint,
+                modifier = Modifier.size(24.dp)
+            )
+        }
+        "settings" -> {
+            Icon(
+                imageVector = Icons.Default.Settings,
+                contentDescription = "Settings",
+                tint = tint,
+                modifier = Modifier.size(24.dp)
+            )
         }
     }
 }
