@@ -1,216 +1,588 @@
 package com.example.genme
 
 import android.app.Application
-import android.graphics.Bitmap
-import androidx.compose.animation.core.*
-import androidx.compose.animation.animateColor
-import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.Image
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.*
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.*
-import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
-import com.example.genme.R
 import com.example.genme.ui.*
 import com.example.genme.utils.rememberImagePicker
 import com.example.genme.viewmodel.HairstyleViewModel
 import com.example.genme.viewmodel.HairstyleViewModelFactory
-import kotlin.math.*
-import kotlin.random.Random
 
-import androidx.lifecycle.ViewModelProvider
-
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HairstyleChangePage(navController: NavController) {
-    val context = LocalContext.current
+fun HairstyleChangePage(
+    navController: NavController,
+    application: Application = LocalContext.current.applicationContext as Application
+) {
     val viewModel: HairstyleViewModel = remember {
-        ViewModelProvider(context as androidx.activity.ComponentActivity, HairstyleViewModelFactory(context.applicationContext as Application)).get(HairstyleViewModel::class.java)
+        HairstyleViewModelFactory(application).create(HairstyleViewModel::class.java)
     }
+    
     val uiState by viewModel.uiState.collectAsState()
     
-    DisposableEffect(Unit) {
-        onDispose {
-            viewModel.clearImages()
-        }
-    }
-    
-    // Initialize API health check
-    LaunchedEffect(Unit) {
-        viewModel.checkApiHealth()
-    }
-    
-    // Image pickers
-    val personImagePicker = rememberImagePicker { uri ->
+    val imagePicker = rememberImagePicker { uri ->
         uri?.let { viewModel.setPersonImage(it) }
     }
     
-    // Colors exactly matching homepage
-    val primaryColor = Color(0xFF38E07B)
-    val backgroundColor = Color(0xFF121212)
-    val textSecondary = Color(0xFFB3B3B3)
-    val accentColor = Color(0xFF5CE690)
+    // State for hairstyle selection
+    var selectedGender by remember { mutableStateOf("Women's Styles") }
+    var selectedHairstyle by remember { mutableStateOf("Long Bob") }
+    var dropdownExpanded by remember { mutableStateOf(false) }
     
+    // Sample hairstyles data
+    val womenStyles = listOf(
+        "Long Bob", "Pixie Cut", "Beach Waves", "Curtain Bangs", "Shag Haircut",
+        "French Bob", "Wolf Cut", "Butterfly Layers", "Modern Mullet", "Blunt Cut",
+        "Layered Cut", "Wavy Bob", "Straight Long Hair", "Feathered Layers", "Textured Crop",
+        "Afro", "Braided Crown", "Twisted Updo", "Sleek Ponytail", "Messy Bun",
+        "Half Up Half Down", "Side Swept Bangs", "Full Fringe", "Wispy Bangs", "Micro Bangs",
+        "Vintage Waves", "Pin Curls", "Victory Rolls", "Finger Waves", "Hollywood Glamour",
+        "Boho Braids", "Dutch Braids", "French Braids", "Fishtail Braid", "Waterfall Braid",
+        "Space Buns", "Top Knot", "Low Chignon", "High Ponytail", "Low Ponytail",
+        "Crimped Hair", "Spiral Curls", "Tight Curls", "Loose Waves", "Straight Hair",
+        "Asymmetrical Cut", "Undercut", "Fade Cut"
+    )
+    
+    val menStyles = listOf(
+        "Fade", "High Fade", "Low Fade", "Mid Fade", "Buzz Cut", "Crew Cut",
+        "Pompadour", "Quiff", "Undercut", "Side Part", "Slicked Back", "Textured Crop",
+        "French Crop", "Caesar Cut", "Ivy League", "Brush Cut", "Flat Top", "Mohawk",
+        "Faux Hawk", "Man Bun", "Top Knot", "Long Hair", "Shag", "Mullet",
+        "Modern Mullet", "Business Professional", "Classic Taper", "Skin Fade", "Bald Fade",
+        "Drop Fade", "Burst Fade", "Temple Fade", "Beard Fade", "Disconnected Undercut",
+        "Comb Over", "Hard Part", "Soft Part", "Messy Hair", "Tousled", "Wavy Hair",
+        "Curly Top", "Afro", "Twist Out", "Lock Style", "Cornrows", "Buzz with Beard",
+        "Long on Top Short Sides", "Textured Fringe", "Angular Fringe", "Blunt Fringe",
+        "Side Swept", "Spiky Hair", "Wet Look", "Matte Finish"
+    )
+    
+    val hairstyles = if (selectedGender == "Women's Styles") womenStyles else menStyles
+
+    // Glassmorphic background with gradient blobs
     Box(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color(0xFF0D0C14))
+            .drawBehind {
+                // Top-left gradient blob
+                drawCircle(
+                    brush = Brush.radialGradient(
+                        colors = listOf(Color(0x6022D3EE), Color(0x507C3AED), Color(0x20764BA2), Color.Transparent),
+                        center = Offset(-200f, -200f),
+                        radius = 600f
+                    ),
+                    radius = 600f,
+                    center = Offset(-200f, -200f)
+                )
+                // Bottom-right gradient blob
+                drawCircle(
+                    brush = Brush.radialGradient(
+                        colors = listOf(Color(0x603B82F6), Color(0x507C3AED), Color(0x20667EEA), Color.Transparent),
+                        center = Offset(size.width + 200f, size.height + 200f),
+                        radius = 700f
+                    ),
+                    radius = 700f,
+                    center = Offset(size.width + 200f, size.height + 200f)
+                )
+                // Additional subtle middle gradient for depth
+                drawCircle(
+                    brush = Brush.radialGradient(
+                        colors = listOf(Color(0x30A855F7), Color.Transparent),
+                        center = Offset(size.width * 0.7f, size.height * 0.3f),
+                        radius = 400f
+                    ),
+                    radius = 400f,
+                    center = Offset(size.width * 0.7f, size.height * 0.3f)
+                )
+            }
     ) {
-        // Background exactly matching homepage - FULL SCREEN NO GAPS
-        Box(
+        Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(backgroundColor)
-        )
-        
-        // Dark overlay exactly like homepage - FULL SCREEN + subtle colorful gradients
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(Color.Black.copy(alpha = 0.7f))
+                .verticalScroll(rememberScrollState())
         ) {
-            com.example.genme.ui.ColorfulBackdrop(primaryColor = primaryColor, accentColor = accentColor)
-            Column(
-                modifier = Modifier.fillMaxSize()
-            ) {
+            // Header
+            GlasmorphicPageHeader(
+                title = "Hairstyle Generator",
+                subtitle = "Create stunning hairstyles",
+                navController = navController,
+                primaryColor = Color(0xFF00F6FF)
+            )
+
             Column(
                 modifier = Modifier
-                    .weight(1f)
-                    .verticalScroll(rememberScrollState())
-                    .padding(24.dp)
+                    .fillMaxSize()
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-            // Glassmorphic header matching home page
-            GlasmorphicPageHeader(
-                title = "Hairstyle Changer",
-                subtitle = "Find your perfect hairstyle with AI",
-                navController = navController,
-                primaryColor = primaryColor
-            )
-            
-            Spacer(modifier = Modifier.height(32.dp))
-            
-            // Progress indicator
-            HairstyleProgressIndicator(uiState)
-            
-            Spacer(modifier = Modifier.height(32.dp))
-            
-            // Error message
-            uiState.errorMessage?.let { errorMessage ->
-                ErrorCard(
-                    message = errorMessage,
-                    onDismiss = { viewModel.clearError() }
-                )
-                Spacer(modifier = Modifier.height(16.dp))
-            }
-            
-            // Upload cards
-            Column(
-                verticalArrangement = Arrangement.spacedBy(20.dp)
-            ) {
-                // Person Image Card
-                ImageUploadCard(
-                    title = "Your Image",
-                    subtitle = "Upload a photo",
-                    description = "Upload an image to try on a new hairstyle",
-                    borderColor = Color(0xFF00D4FF),
-                    icon = R.drawable.ic_person,
-                    selectedImageUri = uiState.personImageUri,
-                    onClick = personImagePicker,
-                    enabled = !uiState.isLoading
-                )
-                
-                // Hairstyle selection dropdown - Futuristic style
-                val hairstyles = listOf(
-                    "Pixie Cut", "Bob Cut", "Lob Cut", "Shag Cut", "Mullet", "Buzz Cut", "Crew Cut", "Ivy League",
-                    "Slicked Back", "Pompadour", "Quiff", "Faux Hawk", "Afro", "Cornrows", "Dreadlocks", "High Top Fade",
-                    "Box Braids", "Twists", "Bantu Knots", "Finger Waves", "Curtain Bangs", "Blunt Bangs", "Side-Swept Bangs",
-                    "Wispy Bangs", "Long Layers", "Short Layers", "Feathered Layers", "Asymmetrical Cut", "Undercut",
-                    "Man Bun", "Top Knot", "Half-Up Half-Down", "Ponytail", "Pigtails", "French Braid", "Dutch Braid",
-                    "Fishtail Braid", "Waterfall Braid", "Crown Braid", "Messy Bun", "Space Buns", "Chignon", "Beehive",
-                    "Victory Rolls", "Pin Curls", "Bouffant", "Flip", "Emo", "Scene"
-                )
-                var selectedHairstyle by remember { mutableStateOf(hairstyles[0]) }
-                
-                // Initialize hairstyle text in ViewModel
-                LaunchedEffect(Unit) {
-                    viewModel.setHairstyleText(hairstyles[0])
+                // Upload Section
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(200.dp),
+                    shape = RoundedCornerShape(24.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = Color.White.copy(alpha = 0.05f)
+                    ),
+                    border = BorderStroke(
+                        1.dp,
+                        Color.White.copy(alpha = 0.1f)
+                    ),
+                    elevation = CardDefaults.cardElevation(
+                        defaultElevation = 8.dp
+                    )
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .clickable { imagePicker() },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        if (uiState.personImageUri != null) {
+                            AsyncImage(
+                                model = uiState.personImageUri,
+                                contentDescription = "Selected Image",
+                                modifier = Modifier.fillMaxSize(),
+                                contentScale = ContentScale.Crop
+                            )
+                        } else {
+                            Column(
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                Card(
+                                    modifier = Modifier.size(80.dp),
+                                    shape = RoundedCornerShape(16.dp),
+                                    colors = CardDefaults.cardColors(
+                                        containerColor = Color.White.copy(alpha = 0.05f)
+                                    ),
+                                    border = BorderStroke(
+                                        2.dp,
+                                        Color.White.copy(alpha = 0.2f)
+                                    )
+                                ) {
+                                    Box(
+                                        modifier = Modifier.fillMaxSize(),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        Icon(
+                                            Icons.Default.Add,
+                                            contentDescription = "Add Photo",
+                                            tint = Color.White.copy(alpha = 0.5f),
+                                            modifier = Modifier.size(40.dp)
+                                        )
+                                    }
+                                }
+                                
+                                Spacer(modifier = Modifier.height(16.dp))
+                                
+                                Text(
+                                    text = "Add Photo",
+                                    color = Color.White,
+                                    fontSize = 20.sp,
+                                    fontWeight = FontWeight.Bold
+                                )
+                                
+                                Text(
+                                    text = "Upload image for hairstyle",
+                                    color = Color.Gray,
+                                    fontSize = 14.sp,
+                                    textAlign = TextAlign.Center
+                                )
+                            }
+                        }
+                    }
                 }
-                
-                FuturisticDropdown(
-                    selectedValue = selectedHairstyle,
-                    options = hairstyles,
-                    label = "Hairstyle",
-                    onValueChange = { 
-                        selectedHairstyle = it
-                        viewModel.setHairstyleText(it)
-                    },
-                    enabled = !uiState.isLoading
-                )
+
+                // Gender Selection
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(16.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = Color.White.copy(alpha = 0.05f)
+                    ),
+                    border = BorderStroke(
+                        1.dp,
+                        Color.White.copy(alpha = 0.1f)
+                    ),
+                    elevation = CardDefaults.cardElevation(
+                        defaultElevation = 8.dp
+                    )
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(8.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        // Men's Styles Button
+                        Card(
+                            modifier = Modifier
+                                .weight(1f)
+                                .clickable { selectedGender = "Men's Styles" },
+                            shape = RoundedCornerShape(12.dp),
+                            colors = CardDefaults.cardColors(
+                                containerColor = if (selectedGender == "Men's Styles") 
+                                    Color(0x2600F6FF) else Color.White.copy(alpha = 0.05f)
+                            ),
+                            border = BorderStroke(
+                                1.dp,
+                                if (selectedGender == "Men's Styles") 
+                                    Color(0xFF00F6FF) else Color.White.copy(alpha = 0.1f)
+                            )
+                        ) {
+                            Text(
+                                text = "Men's Styles",
+                                color = if (selectedGender == "Men's Styles") Color.White else Color.Gray,
+                                fontSize = 14.sp,
+                                fontWeight = if (selectedGender == "Men's Styles") FontWeight.Bold else FontWeight.Medium,
+                                modifier = Modifier.padding(12.dp),
+                                textAlign = TextAlign.Center
+                            )
+                        }
+
+                        // Women's Styles Button
+                        Card(
+                            modifier = Modifier
+                                .weight(1f)
+                                .clickable { selectedGender = "Women's Styles" },
+                            shape = RoundedCornerShape(12.dp),
+                            colors = CardDefaults.cardColors(
+                                containerColor = if (selectedGender == "Women's Styles") 
+                                    Color(0x2600F6FF) else Color.White.copy(alpha = 0.05f)
+                            ),
+                            border = BorderStroke(
+                                1.dp,
+                                if (selectedGender == "Women's Styles") 
+                                    Color(0xFF00F6FF) else Color.White.copy(alpha = 0.1f)
+                            )
+                        ) {
+                            Text(
+                                text = "Women's Styles",
+                                color = if (selectedGender == "Women's Styles") Color.White else Color.Gray,
+                                fontSize = 14.sp,
+                                fontWeight = if (selectedGender == "Women's Styles") FontWeight.Bold else FontWeight.Medium,
+                                modifier = Modifier.padding(12.dp),
+                                textAlign = TextAlign.Center
+                            )
+                        }
+                    }
+                }
+
+                // Hairstyle Selection
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(16.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = Color.White.copy(alpha = 0.05f)
+                    ),
+                    border = BorderStroke(
+                        1.dp,
+                        Color.White.copy(alpha = 0.1f)
+                    ),
+                    elevation = CardDefaults.cardElevation(
+                        defaultElevation = 8.dp
+                    )
+                ) {
+            Column(
+                        modifier = Modifier.padding(16.dp)
+                    ) {
+                        Text(
+                            text = "Select Hairstyle",
+                            color = Color.Gray,
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.Medium
+                        )
+                        
+                        Spacer(modifier = Modifier.height(8.dp))
+                        
+                        Box {
+                            Card(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clickable { dropdownExpanded = true },
+                                shape = RoundedCornerShape(12.dp),
+                                colors = CardDefaults.cardColors(
+                                    containerColor = Color.Transparent
+                                ),
+                                border = BorderStroke(
+                                    1.dp,
+                                    Color.White.copy(alpha = 0.1f)
+                                )
+                            ) {
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(16.dp),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Text(
+                                        text = selectedHairstyle,
+                                        color = Color.White,
+                                        fontSize = 16.sp,
+                                        fontWeight = FontWeight.Medium
+                                    )
+                                    
+                                    Icon(
+                                        Icons.Default.ExpandMore,
+                                        contentDescription = "Expand",
+                                        tint = Color.White.copy(alpha = 0.7f)
+                                    )
+                                }
+                            }
+                            
+                            DropdownMenu(
+                                expanded = dropdownExpanded,
+                                onDismissRequest = { dropdownExpanded = false },
+                                modifier = Modifier
+                                    .heightIn(max = 300.dp)
+                                    .width(280.dp)
+                                    .clip(RoundedCornerShape(12.dp))
+                                    .background(
+                                        Color(0xE6282828),
+                                        RoundedCornerShape(12.dp)
+                                    )
+                                    .border(
+                                        1.dp,
+                                        Color.White.copy(alpha = 0.1f),
+                                        RoundedCornerShape(12.dp)
+                                    )
+                            ) {
+                                hairstyles.forEach { style ->
+                                    DropdownMenuItem(
+                                        text = {
+                                            Text(
+                                                text = style,
+                                                color = if (style == selectedHairstyle) Color(0xFF00F6FF) else Color.White,
+                                                fontSize = 14.sp,
+                                                fontWeight = if (style == selectedHairstyle) FontWeight.Bold else FontWeight.Normal
+                                            )
+                                        },
+                                        onClick = {
+                                            selectedHairstyle = style
+                                            viewModel.setHairstyleText(style)
+                                            dropdownExpanded = false
+                                        },
+                                        modifier = Modifier
+                                            .background(
+                                                if (style == selectedHairstyle) 
+                                                    Color(0x3300F6FF) 
+                                                else 
+                                                    Color.Transparent
+                                            )
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(80.dp)) // Space for bottom navigation
             }
-            
-            Spacer(modifier = Modifier.height(32.dp))
-            
-            // Transform button
-            TransformButton(
-                enabled = uiState.canStartHairstyleChange,
-                isLoading = uiState.isLoading,
-                loadingMessage = uiState.loadingMessage,
-                onClick = { viewModel.startHairstyleChange() }
-            )
-            
-            Spacer(modifier = Modifier.height(24.dp))
-            
-            // Result section
-            if (uiState.hasResult) {
-                ResultCard(
-                    resultImage = uiState.resultImage!!,
-                    taskId = uiState.taskId,
-                    isSaving = uiState.isSaving,
-                    saveSuccessMessage = uiState.saveSuccessMessage,
-                    onReset = { viewModel.reset() },
-                    onSaveToGallery = { viewModel.saveResultToGallery() },
-                    onClearSaveMessage = { viewModel.clearSaveMessage() }
-                )
+
+            // Custom Bottom Navigation exactly like HTML with elevated Generate button
+            Box {
+                // Main bottom navigation
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(80.dp),
+                    shape = RoundedCornerShape(topStart = 0.dp, topEnd = 0.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = Color.Black.copy(alpha = 0.3f)
+                    ),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(horizontal = 16.dp),
+                        horizontalArrangement = Arrangement.SpaceEvenly,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        // Home
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            modifier = Modifier.clickable { 
+                                navController.navigate("landing_page") {
+                                    popUpTo("landing_page") { inclusive = true }
+                                    launchSingleTop = true
+                                }
+                            }
+                        ) {
+                            Icon(
+                                Icons.Default.Home,
+                                contentDescription = "Home",
+                                tint = Color.Gray,
+                                modifier = Modifier.size(24.dp)
+                            )
+                            Text(
+                                "Home",
+                                color = Color.Gray,
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.Medium
+                            )
+                        }
+
+                        // Styles
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            modifier = Modifier.clickable { 
+                                navController.navigate("clothes_change") {
+                                    launchSingleTop = true
+                                }
+                            }
+                        ) {
+                            Icon(
+                                Icons.Default.Style,
+                                contentDescription = "Styles", 
+                                tint = Color.Gray,
+                                modifier = Modifier.size(24.dp)
+                            )
+                            Text(
+                                "Styles",
+                                color = Color.Gray,
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.Medium
+                            )
+                        }
+
+                        // Spacer for elevated button
+                        Spacer(modifier = Modifier.width(56.dp))
+
+                        // Profile
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            modifier = Modifier.clickable { 
+                                navController.navigate("profile") {
+                                    launchSingleTop = true
+                                }
+                            }
+                        ) {
+                            Icon(
+                                Icons.Default.Person,
+                                contentDescription = "Profile",
+                                tint = Color.Gray,
+                                modifier = Modifier.size(24.dp)
+                            )
+                            Text(
+                                "Profile",
+                                color = Color.Gray,
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.Medium
+                            )
+                        }
+
+                        // Settings
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            modifier = Modifier.clickable { 
+                                navController.navigate("settings") {
+                                    launchSingleTop = true
+                                }
+                            }
+                        ) {
+                            Icon(
+                                Icons.Default.Settings,
+                                contentDescription = "Settings",
+                                tint = Color.Gray,
+                                modifier = Modifier.size(24.dp)
+                            )
+                            Text(
+                                "Settings",
+                                color = Color.Gray,
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.Medium
+                            )
+                        }
+                    }
+                }
+
+                // Elevated Generate Button (exactly like HTML)
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .offset(y = (-28).dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Button(
+                            onClick = {
+                                if (uiState.personImageUri != null) {
+                                    viewModel.startHairstyleChange()
+                                }
+                            },
+                            modifier = Modifier.size(56.dp),
+                            shape = CircleShape,
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color.Transparent
+                            ),
+                            contentPadding = PaddingValues(0.dp),
+                            elevation = ButtonDefaults.buttonElevation(
+                                defaultElevation = 12.dp,
+                                pressedElevation = 8.dp
+                            )
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .background(
+                                        brush = Brush.radialGradient(
+                                            colors = listOf(
+                                                Color(0xFF22D3EE),
+                                                Color(0xFF7C3AED)
+                                            )
+                                        ),
+                                        shape = CircleShape
+                                    ),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(
+                                    Icons.Default.AutoAwesome,
+                                    contentDescription = "Generate",
+                                    tint = Color.White,
+                                    modifier = Modifier.size(28.dp)
+                                )
+                            }
+                        }
+                        
+                        Text(
+                            text = "Generate",
+                            color = Color.White,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Medium,
+                            modifier = Modifier.padding(top = 4.dp)
+                        )
+                    }
+                }
             }
-            
-            Spacer(modifier = Modifier.height(100.dp)) // Space for bottom nav
-            }
-            
-            // Bottom navigation
-            HtmlStyleBottomNav(
-                primaryColor = primaryColor,
-                textSecondary = textSecondary,
-                navController = navController,
-                currentRoute = "hairstyle_change"
-            )
-        }
         }
     }
 }

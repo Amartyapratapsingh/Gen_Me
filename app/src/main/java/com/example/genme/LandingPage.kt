@@ -13,6 +13,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
@@ -22,11 +23,11 @@ import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.only
-import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -43,6 +44,7 @@ import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.graphics.Shadow
@@ -60,94 +62,470 @@ import kotlin.random.Random
 
 @Composable
 fun LandingPage(navController: NavController) {
-    // CSS variables equivalent colors
-    val primaryColor = Color(0xFF38E07B)
-    val backgroundColor = Color(0xFF121212)
-    val textSecondary = Color(0xFFB3B3B3)
-    val accentColor = Color(0xFF5CE690)
+    val bg = Color(0xFF0D0D1A)
+    val borderBrush = Brush.linearGradient(
+        colors = listOf(Color(0xFF00B8FF), Color(0xFF8338EC), Color(0xFF00F5D4))
+    )
 
+    Box(modifier = Modifier.fillMaxSize().background(bg)) {
+        // Soft top glow
     Box(
-        modifier = Modifier.fillMaxSize()
-    ) {
-        // Background with dark overlay - FULL SCREEN NO GAPS
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(backgroundColor)
+        modifier = Modifier
+                .fillMaxWidth()
+                .height(240.dp)
+            .background(
+                    Brush.linearGradient(
+                        listOf(Color(0x3300B8FF), Color(0x338338EC), Color(0x3300F5D4))
+                    )
+                )
+                .align(Alignment.TopCenter)
         )
-        
-        // Dark overlay - FULL SCREEN + subtle colorful gradients
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(Color.Black.copy(alpha = 0.7f))
-        ) {
-            com.example.genme.ui.ColorfulBackdrop(primaryColor = primaryColor, accentColor = accentColor)
-        }
-        
-        // Main content with bottom navigation fixed at bottom
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .windowInsetsPadding(WindowInsets.systemBars.only(WindowInsetsSides.Bottom)) // Only handle bottom navigation bar, not status bar
+                .windowInsetsPadding(
+                    WindowInsets.safeDrawing.only(WindowInsetsSides.Top + WindowInsetsSides.Bottom)
+                )
         ) {
-            // Scrollable content area
             Column(
                 modifier = Modifier
-                    .weight(1f) // Takes remaining space above bottom nav
+                    .weight(1f)
                     .verticalScroll(rememberScrollState())
-                    .fillMaxWidth()
             ) {
-                // No top spacer - start immediately from the top
-                
-                // Header section with glassmorphic card exactly like HTML
-                HtmlStyleHeader(primaryColor, accentColor, textSecondary)
-                
-                Spacer(modifier = Modifier.height(32.dp))
-                
-                // Feature cards section exactly like HTML
-                Column(
-                    modifier = Modifier.padding(horizontal = 16.dp),
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
-                ) {
-                    HtmlStyleFeatureCard(
-                        title = "Clothes Changer",
-                        subtitle = "Transform your look",
-                        buttonText = "Try On",
-                        iconType = "shirt",
-                        primaryColor = primaryColor,
-                        onClick = { navController.navigate("clothes_change") }
-                    )
-                    
-                    HtmlStyleFeatureCard(
-                        title = "Hairstyle Changer", 
-                        subtitle = "Find a new hairstyle",
-                        buttonText = "Experiment",
-                        iconType = "scissors",
-                        primaryColor = primaryColor,
-                        onClick = { navController.navigate("hairstyle_change") }
-                    )
-                    
-                    HtmlStyleFeatureCard(
-                        title = "Gibble Art Maker",
-                        subtitle = "Create artistic photos", 
-                        buttonText = "Create Art",
-                        iconType = "wand",
-                        primaryColor = primaryColor,
-                        onClick = { navController.navigate("ghibli_art") }
-                    )
-                }
-                
-                Spacer(modifier = Modifier.height(100.dp)) // Space for bottom nav
+                TopHeader(onSettings = { navController.navigate("settings") })
+                SearchBar()
+                FeatureCarousel(
+                    onOutfits = { navController.navigate("clothes_change") },
+                    onHairstyle = { navController.navigate("hairstyle_change") },
+                    onAvatars = { navController.navigate("ghibli_art") },
+                    borderBrush = borderBrush
+                )
+                Text(
+                    text = "Tools",
+                    color = Color.White,
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                )
+                ToolsGrid(
+                    borderBrush = borderBrush,
+                    onCloth = { navController.navigate("clothes_change") },
+                    onHair = { navController.navigate("hairstyle_change") },
+                    onBackground = { navController.navigate("gallery") },
+                    onAvatar = { navController.navigate("profile") },
+                    onFilters = { navController.navigate("gallery") },
+                    onFaceGen = { navController.navigate("ghibli_art") }
+                )
+                Spacer(Modifier.height(12.dp))
             }
-            
-            // Fixed bottom navigation - NO PADDING, NO GAPS
-            HtmlStyleBottomNav(
-                primaryColor = primaryColor,
-                textSecondary = textSecondary,
-                navController = navController,
-                currentRoute = "landing_page"
+            FooterNav(
+                onHome = { /* already here */ },
+                onStyles = { navController.navigate("clothes_change") },
+                onGenerate = { navController.navigate("ghibli_art") },
+                onProfile = { navController.navigate("profile") }
             )
+            Spacer(Modifier.height(20.dp))
+        }
+    }
+}
+
+@Composable
+private fun TopHeader(onSettings: () -> Unit) {
+    Row(
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Spacer(Modifier.width(48.dp))
+        Text(
+            text = "Gen ME",
+            color = Color.White,
+            fontWeight = FontWeight.Bold,
+            fontSize = 20.sp,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.weight(1f).padding(horizontal = 8.dp)
+        )
+        IconButton(onClick = onSettings, modifier = Modifier.size(40.dp)) {
+            Icon(imageVector = Icons.Filled.Settings, contentDescription = "Settings", tint = Color.White)
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun SearchBar() {
+    val query = remember { mutableStateOf("") }
+    Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp)) {
+        OutlinedTextField(
+            value = query.value,
+            onValueChange = { query.value = it },
+            singleLine = true,
+            placeholder = { Text("Search", color = Color.White.copy(0.5f)) },
+            leadingIcon = { Icon(imageVector = Icons.Filled.Search, contentDescription = null, tint = Color.White.copy(0.5f)) },
+            modifier = Modifier.fillMaxWidth(),
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedTextColor = Color.White,
+                unfocusedTextColor = Color.White,
+                focusedBorderColor = Color(0xFF8338EC),
+                unfocusedBorderColor = Color.Transparent,
+                focusedContainerColor = Color(0x991A1A2E),
+                unfocusedContainerColor = Color(0x991A1A2E),
+                cursorColor = Color(0xFF8338EC)
+            ),
+            shape = RoundedCornerShape(12.dp)
+        )
+    }
+}
+
+@Composable
+private fun FeatureCarousel(
+    onOutfits: () -> Unit,
+    onHairstyle: () -> Unit,
+    onAvatars: () -> Unit,
+    borderBrush: Brush
+) {
+    val cardShape = RoundedCornerShape(16.dp)
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .horizontalScroll(rememberScrollState())
+            .padding(horizontal = 16.dp, vertical = 8.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+        FeatureCard(
+            imageUrl = "https://lh3.googleusercontent.com/aida-public/AB6AXuCHH3qXllSi35moGGMaAiou98gfqQRu72-6ZjKpzZWx1wd-_e-mWMmgAl1MxR3tRCyoIVs6jKmnBrcIow9Aau0PSd5k5XbBN9swpq9BL0xYkttrJmhFTJ-kaLaexXfQiPRWi3RBW32bOVrymSNcAowBNKotTz7JCASSJIX9Lj0WJ53NHXbyioJCOip2wN-8dqsspGF_UtIITgOm3zmP90mUwTTfWRT_cr8zcm2Wbl2XtjMTVQO4T_ELU-2Q2Wf7zxUqCU2INXOvAcI",
+            label = "Try New Outfits",
+            onClick = onOutfits,
+            shape = cardShape,
+            borderBrush = borderBrush
+        )
+        FeatureCard(
+            imageUrl = "https://lh3.googleusercontent.com/aida-public/AB6AXuDK8W95m5h3SoRf0HLmmoeyLyUb5xIaCPEIaKz67cIvyPn-oVM-99rNUGtOMhO5alcmEKCENlFx4GYkor5dMosqnuIPbfz3f2a0ql1ucy2mxJpYSuPZ-P81_4EJXbEGq_X6aCsvj3bm_Go96djdon29ABHQMmbxrVIWRbysawbEOe1hZ9c-NAKsEi2XMv7FdRXtCmRZ17TJ-dxnlgOs1kaGGpXsczRjETkAfFNKa0Wd80aLdeayBewMS2ciDtyS8Ftq4IyD5VWKLUY",
+            label = "Change Hairstyle",
+            onClick = onHairstyle,
+            shape = cardShape,
+            borderBrush = borderBrush
+        )
+        FeatureCard(
+            imageUrl = "https://lh3.googleusercontent.com/aida-public/AB6AXuDv-X7tNMvyTWEJs1Q7VofyWJkKRThqTKsMSGl4qffzU1Ds4Cu4EKY8wPTTK6WKwhACZlEFkH5gB6VF_pbXPsTvj-LVUFJhGt94RgjTTUdSfAGTmnBf9gpFDpUbnMBgRPgK2LBlfJBTvNq9nI4U7BMdB6M_e7GOkV-g5WQnNsJj8XC65oIY0SgUVtGmBIQKxwqyZNf-CvZk5tAp7TZ1cjis8u7qhCHCtRGbduPVsuMMMZvMPT-1Ko9CoeoixXIicXUVDP7E7Dz8Uc4",
+            label = "Generate AI Avatars",
+            onClick = onAvatars,
+            shape = cardShape,
+            borderBrush = borderBrush
+        )
+    }
+}
+
+@Composable
+private fun FeatureCard(
+    imageUrl: String,
+    label: String,
+    onClick: () -> Unit,
+    shape: RoundedCornerShape,
+    borderBrush: Brush
+) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Card(
+            onClick = onClick,
+            shape = shape,
+            colors = CardDefaults.cardColors(containerColor = Color.Transparent),
+            modifier = Modifier
+                .width(220.dp)
+                .aspectRatio(4f / 5f)
+                .border(width = 1.dp, brush = borderBrush, shape = shape)
+                .clip(shape)
+        ) {
+            AsyncImage(
+                model = imageUrl,
+                contentDescription = label,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.fillMaxSize()
+            )
+        }
+        Spacer(Modifier.height(8.dp))
+        Text(text = label, color = Color.White, fontSize = 16.sp, fontWeight = FontWeight.Medium)
+    }
+}
+
+@Composable
+private fun ToolsGrid(
+    borderBrush: Brush,
+    onCloth: () -> Unit,
+    onHair: () -> Unit,
+    onBackground: () -> Unit,
+    onAvatar: () -> Unit,
+    onFilters: () -> Unit,
+    onFaceGen: () -> Unit
+) {
+    val items = listOf(
+        ToolItem("Cloth Changer", "https://lh3.googleusercontent.com/aida-public/AB6AXuByBrv5HWyaUW6dcqh6x24r6rKxTwd70UFFwQPhnbPyr1aKkUVm6EYmKeKIRKUWviR7cy9d95aqDIC9pimEmGeShKUZO7RRGFpPDPdC71ZfA3O0IxT1KEgVWyC3N02niqoKEcFwSZW_LoyZLVBDGdYDAtbmp_MHgH2DM5mTQb5bRiXIAwRcZu3Hkg5QKvcwVfHWVc-wiEFaTcSF1LtXPvruXn3wKE5d6ceuFoeWRijX1LMVrf8UKUQFedXDwVfs4ynHdKMfOJqrbOA", onCloth),
+        ToolItem("Hairstyle Changer", "https://lh3.googleusercontent.com/aida-public/AB6AXuBaThVtERU-QuL7WFIzM1qGp7bbh63c4aYpAlBewkTntAwe8M-O5Qi8DTkvk5B_K_KifruWkeGxUzLck2W6U5IzQq-Jfl7mEiAhJkVUHHP0A8MHLqU8HCh6YW02c9L6yLh3Juyhm7o0J_WV6sSKIFTt72LhXh6-R7xSnqIte4cl6IRwf7ESU_-6l8RJXMbjZeOrLELInWgBpAJEeaOTO2N1DDloamypwnXENfC6ZMyEEjyQ4_IDfI1RzymGuB7lC-xkEpzCkGPyywQ", onHair),
+        ToolItem("Background Changer", "https://lh3.googleusercontent.com/aida-public/AB6AXuBPjm2PnlRLSMgFsUUMJhmEn7KIPjJNulqvxf5ZA0_qaeNBJlU7Xons8vg7jNpH7pWUaHt5L841wDoQkbZsyhsNY3Hnz2JHxs14MmesDZwjRKmg6i3CW96q9cc89P48O3t4_5UUgruVWewZrfu8DaRHDI627kYJLed9QSxtxEail2sGwcPd10Be_2bp3wbU_VNjFTdyRVihB7j6YIUs3bF55y2C1m97ULfSvHfVCB2RZtGhPlfiPmbI8Kzf260ADEuANC4Q9a4O4no", onBackground),
+        ToolItem("AI Avatar", "https://lh3.googleusercontent.com/aida-public/AB6AXuBmcQ8w7pSONyGyw3kBA1Pyjg7Vak5RA8_j-Uh1VCPsTFjLm-h5yqzt9lHReaGowbTF2Eh0zi646dz-jUvFycDm9DlOEUapceRqB4-0OfnQQeTkEKSqslKpzkvUyGdC4ottH36IvYRT4KSl1E4LuwpJSK-5lndVt4qoffxOano_cOc7NC4bt9EzKVFNYHu08jidjbtj3jkgf3l9C0XaTGfu_7idapO317rYEbwjWkJua2o8tDdj3xgw3TRLaDNo7l275QaVMyYgKCE", onAvatar),
+        ToolItem("Filters & Effects", "https://lh3.googleusercontent.com/aida-public/AB6AXuCex02vfyPcb2KWlS_DRDarjZMGpivKgrSX0_UxRY_2OkOztrFXzAnlu3GS8u6Q0QJbQzSS5qXg6Ud29-xCClW3S_hSZh3B83fChQAtiUg-QXSCtLclRhEYS9PCFD0U4bbdyPpJfIpSx3-y6Uyts0tJ_hMrk8EGgjTla5aLzhVVThKw0ur3FK6d1alOFvk6dpXbKYdEVGGSFWPio5UHh99nQRIARh1WFK-9GYyXnvcLRbGfXa1sxyHfk3ranusOA65zItpEChZW0n8", onFilters),
+        ToolItem("Face Generator", "https://lh3.googleusercontent.com/aida-public/AB6AXuCtjuaG_csFUAI4u4HEZhOSAv1ks69jxaxSO_IpPh9hhJ2k8CablgNv6_OjEkjr9HNKZ2tbYoyA2rdSmg0xA9P_-PUcq9JmMYNZ2fqZ8Qe0Vp3vUXG1a0UzZC8LsrxqdcecZsAiphg9yZiftWuJzDSRLAdPpIaiV9IVTEckY-cl208SZb_2y08-jN_gjMHXptFaLk0rxevDFkjrpYDJ6nBg0f3MXgeiuKYriSjescJPh3F6wrovkfA3p9E4mleLXqqVhcgEmFIvkSc", onFaceGen)
+    )
+
+    Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
+        for (row in items.chunked(2)) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                row.forEach { item ->
+                    ToolCard(item = item, borderBrush = borderBrush, modifier = Modifier.weight(1f))
+                }
+                if (row.size == 1) Spacer(Modifier.weight(1f))
+            }
+            Spacer(Modifier.height(12.dp))
+        }
+    }
+}
+
+private data class ToolItem(val title: String, val imageUrl: String, val onClick: () -> Unit)
+
+@Composable
+private fun ToolCard(item: ToolItem, borderBrush: Brush, modifier: Modifier = Modifier) {
+    val shape = RoundedCornerShape(16.dp)
+    Row(
+        modifier = modifier
+            .clip(shape)
+            .background(Color(0x991A1A2E))
+            .border(width = 1.dp, brush = borderBrush, shape = shape)
+            .clickable { item.onClick() }
+            .padding(12.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        AsyncImage(
+            model = item.imageUrl,
+            contentDescription = item.title,
+            modifier = Modifier.size(48.dp).clip(RoundedCornerShape(8.dp)),
+            contentScale = ContentScale.Crop
+        )
+        Text(text = item.title, color = Color.White, fontWeight = FontWeight.SemiBold, fontSize = 14.sp)
+    }
+}
+
+@Composable
+private fun FooterNav(
+    onHome: () -> Unit,
+    onStyles: () -> Unit,
+    onGenerate: () -> Unit,
+    onProfile: () -> Unit
+) {
+    val pillBrush = Brush.linearGradient(listOf(Color(0xFF00B8FF), Color(0xFF8338EC)))
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(Color(0xCC0D0D1A))
+            .padding(horizontal = 12.dp, vertical = 8.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        FooterItemSelected(label = "Home", brush = pillBrush, onClick = onHome)
+        FooterItem(iconRes = R.drawable.ic_clothing, label = "Styles", onClick = onStyles)
+        FooterItem(iconRes = R.drawable.ic_gibli, label = "Generate", onClick = onGenerate)
+        FooterItem(iconRes = R.drawable.ic_person, label = "Profile", onClick = onProfile)
+    }
+}
+
+@Composable
+private fun FooterItem(iconRes: Int, label: String, onClick: () -> Unit) {
+    Column(
+        modifier = Modifier.clickable { onClick() },
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Icon(painter = painterResource(id = iconRes), contentDescription = label, tint = Color.White.copy(0.6f), modifier = Modifier.size(24.dp))
+        Text(text = label, color = Color.White.copy(0.6f), fontSize = 12.sp)
+    }
+}
+
+@Composable
+private fun FooterItemSelected(label: String, brush: Brush, onClick: () -> Unit) {
+    Column(
+        modifier = Modifier.clickable { onClick() },
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Box(
+            modifier = Modifier
+                .size(width = 64.dp, height = 32.dp)
+                .clip(RoundedCornerShape(100))
+                .background(brush)
+                .padding(4.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(imageVector = Icons.Filled.Home, contentDescription = label, tint = Color.White)
+        }
+        Text(text = label, color = Color.White, fontSize = 12.sp)
+    }
+}
+
+@Composable
+fun PremiumHeroSection(
+    primaryColor: Color,
+    accentColor: Color,
+    textSecondary: Color,
+    onTryClothes: () -> Unit,
+    onTryHair: () -> Unit
+) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 12.dp),
+        shape = RoundedCornerShape(28.dp),
+        colors = CardDefaults.cardColors(containerColor = Color(0x66282828)),
+        border = BorderStroke(1.dp, Color.White.copy(alpha = 0.08f)),
+        elevation = CardDefaults.cardElevation(defaultElevation = 12.dp)
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(
+                    brush = Brush.linearGradient(
+                        colors = listOf(
+                            Color(0x33FFFFFF),
+                            Color.Transparent
+                        )
+                    )
+                )
+                .padding(24.dp)
+        ) {
+            Column(
+                horizontalAlignment = Alignment.Start,
+                verticalArrangement = Arrangement.spacedBy(14.dp)
+            ) {
+                Text(
+                    text = "GenMe",
+                    fontSize = 14.sp,
+                    color = textSecondary
+                )
+                Text(
+                    text = "Virtual Style Studio",
+                    fontSize = 36.sp,
+                    fontWeight = FontWeight.ExtraBold,
+                    style = androidx.compose.ui.text.TextStyle(
+                        brush = Brush.linearGradient(colors = listOf(primaryColor, accentColor))
+                    )
+                )
+                Text(
+                    text = "AI‑powered try‑ons. New looks in seconds.",
+                    fontSize = 16.sp,
+                    color = Color.White.copy(alpha = 0.9f)
+                )
+
+                Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                    Button(
+                        onClick = onTryClothes,
+                        colors = ButtonDefaults.buttonColors(containerColor = primaryColor),
+                        shape = RoundedCornerShape(20.dp)
+                    ) { Text("Try Clothes", color = Color.Black, fontWeight = FontWeight.Bold) }
+
+                    OutlinedButton(
+                        onClick = onTryHair,
+                        shape = RoundedCornerShape(20.dp),
+                        border = BorderStroke(1.dp, primaryColor.copy(alpha = 0.7f)),
+                        colors = ButtonDefaults.outlinedButtonColors(contentColor = primaryColor)
+                    ) { Text("Change Hairstyle") }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun PremiumFeatureGrid(
+    primaryColor: Color,
+    textSecondary: Color,
+    onClothes: () -> Unit,
+    onHair: () -> Unit,
+    onArt: () -> Unit,
+    onGallery: () -> Unit
+) {
+    Column(modifier = Modifier.padding(horizontal = 16.dp)) {
+        Row(horizontalArrangement = Arrangement.spacedBy(12.dp), modifier = Modifier.fillMaxWidth()) {
+            PremiumFeatureCard(
+                title = "Clothes",
+                subtitle = "Virtual try‑on",
+                icon = Icons.Default.CheckCircle,
+                primaryColor = primaryColor,
+                onClick = onClothes,
+                modifier = Modifier.weight(1f)
+            )
+            PremiumFeatureCard(
+                title = "Hairstyle",
+                subtitle = "Find your cut",
+                icon = Icons.Default.Face,
+                primaryColor = primaryColor,
+                onClick = onHair,
+                modifier = Modifier.weight(1f)
+            )
+        }
+        Spacer(modifier = Modifier.height(12.dp))
+        Row(horizontalArrangement = Arrangement.spacedBy(12.dp), modifier = Modifier.fillMaxWidth()) {
+            PremiumFeatureCard(
+                title = "Ghibli Art",
+                subtitle = "Stylize portraits",
+                icon = Icons.Default.Create,
+                primaryColor = primaryColor,
+                onClick = onArt,
+                modifier = Modifier.weight(1f)
+            )
+            PremiumFeatureCard(
+                title = "Gallery",
+                subtitle = "Saved results",
+                icon = Icons.Default.Favorite,
+                primaryColor = primaryColor,
+                onClick = onGallery,
+                modifier = Modifier.weight(1f)
+            )
+        }
+    }
+}
+
+@Composable
+fun PremiumFeatureCard(
+    title: String,
+    subtitle: String,
+    icon: ImageVector,
+    primaryColor: Color,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit
+) {
+    val interaction = remember { MutableInteractionSource() }
+    val pressed by interaction.collectIsPressedAsState()
+    val scale by animateFloatAsState(if (pressed) 0.98f else 1f, label = "card_scale")
+
+    Card(
+        modifier = modifier
+            .height(120.dp)
+            .graphicsLayer {
+                scaleX = scale; scaleY = scale
+            }
+            .clickable(interactionSource = interaction, indication = null) { onClick() },
+        shape = RoundedCornerShape(20.dp),
+        colors = CardDefaults.cardColors(containerColor = Color(0x66282828)),
+        border = BorderStroke(1.dp, Color.White.copy(alpha = 0.08f)),
+        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(
+            brush = Brush.radialGradient(
+                        colors = listOf(primaryColor.copy(alpha = 0.15f), Color.Transparent)
+                    )
+                )
+                .padding(16.dp)
+        ) {
+            Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                Icon(icon, contentDescription = title, tint = primaryColor, modifier = Modifier.size(24.dp))
+                Text(title, color = Color.White, fontWeight = FontWeight.SemiBold)
+                Text(subtitle, color = Color(0xFFB3B3B3), fontSize = 12.sp)
+            }
         }
     }
 }
@@ -173,17 +551,17 @@ fun HtmlStyleHeader(
         ),
         border = BorderStroke(1.dp, Color.White.copy(alpha = 0.1f))
     ) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(
-                    brush = Brush.verticalGradient(
-                        colors = listOf(
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(
+                        brush = Brush.verticalGradient(
+                            colors = listOf(
                             Color(0x80282828),
                             Color(0x60202020)
+                            )
                         )
                     )
-                )
                 .padding(top = 60.dp, bottom = 40.dp, start = 16.dp, end = 16.dp), // Reduced padding
             contentAlignment = Alignment.Center
         ) {
@@ -191,7 +569,7 @@ fun HtmlStyleHeader(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                Text(
+                        Text(
                     text = "Virtual Style Studio",
                     fontSize = 48.sp, // text-5xl
                     fontWeight = FontWeight.Black, // font-black
@@ -200,7 +578,7 @@ fun HtmlStyleHeader(
                             colors = listOf(primaryColor, accentColor)
                         )
                     ),
-                    textAlign = TextAlign.Center,
+                            textAlign = TextAlign.Center,
                     letterSpacing = (-2).sp // tracking-tighter
                 )
                 
@@ -284,7 +662,7 @@ fun HtmlStyleFeatureCard(
                     .background(
                         brush = when (iconType) {
                             "shirt" -> Brush.radialGradient(
-                                colors = listOf(
+                colors = listOf(
                                     Color(0xFF4A5568).copy(alpha = 0.6f), // Gray for clothes
                                     Color.Black.copy(alpha = 0.4f)
                                 ),
@@ -315,12 +693,12 @@ fun HtmlStyleFeatureCard(
             )
             
             // Glassmorphic backdrop blur effect
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(
-                        brush = Brush.verticalGradient(
-                            colors = listOf(
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(
+                    brush = Brush.verticalGradient(
+                        colors = listOf(
                                 Color(0x4D000000),
                                 Color(0x66000000)
                             )
@@ -352,20 +730,20 @@ fun HtmlStyleFeatureCard(
                     ) {
                         HtmlStyleIcon(iconType = iconType, primaryColor = primaryColor)
                     }
-                    
-                    Column(
+                
+                Column(
                         verticalArrangement = Arrangement.spacedBy(2.dp)
-                    ) {
-                        Text(
-                            text = title,
+                ) {
+                    Text(
+                        text = title,
                             fontSize = 18.sp, // text-lg
                             fontWeight = FontWeight.Bold, // font-bold
                             color = Color.White
-                        )
-                        Text(
-                            text = subtitle,
+                    )
+                    Text(
+                        text = subtitle,
                             fontSize = 14.sp, // text-sm
-                            fontWeight = FontWeight.Medium,
+                        fontWeight = FontWeight.Medium,
                             color = Color(0xFFB3B3B3) // text-gray-300
                         )
                     }
@@ -430,7 +808,7 @@ fun BackgroundImageForCard(iconType: String) {
                         quadraticBezierTo(x + 25f, y + 8f, x + 20f, y)
                     }
                     
-                    drawPath(
+                drawPath(
                         path = hangerPath,
                         color = Color.White.copy(alpha = 0.3f),
                         style = Stroke(width = 2f, cap = StrokeCap.Round)
@@ -454,13 +832,13 @@ fun BackgroundImageForCard(iconType: String) {
                         quadraticBezierTo(x, y + 8f, x - 18f, y)
                     }
                     
-                    drawPath(
+                drawPath(
                         path = clothingPath,
                         color = Color.White.copy(alpha = 0.2f + i * 0.1f)
                     )
                     
                     // Add clothing details
-                    drawLine(
+                drawLine(
                         color = Color.White.copy(alpha = 0.15f),
                         start = Offset(x - 10f, y + 25f),
                         end = Offset(x + 10f, y + 25f),
@@ -476,7 +854,7 @@ fun BackgroundImageForCard(iconType: String) {
                     when (i % 3) {
                         0 -> {
                             // Button
-                            drawCircle(
+                drawCircle(
                                 color = Color.White.copy(alpha = 0.2f),
                                 radius = 3f,
                                 center = Offset(x, y)
@@ -507,8 +885,8 @@ fun BackgroundImageForCard(iconType: String) {
                 repeat(15) { i ->
                     val x1 = (i * 23) % width.toInt().toFloat()
                     val y1 = (i * 31) % height.toInt().toFloat()
-                    
-                    drawCircle(
+                
+                drawCircle(
                         color = Color.White.copy(alpha = 0.05f),
                         radius = 1f,
                         center = Offset(x1, y1)
@@ -572,8 +950,8 @@ fun BackgroundImageForCard(iconType: String) {
                             y + 120f
                         )
                     }
-                    
-                    drawPath(
+                
+                drawPath(
                         path = hairStrand,
                         color = Color.White.copy(alpha = 0.15f + (i % 4) * 0.05f),
                         style = Stroke(width = 1.5f + (i % 3) * 0.5f, cap = StrokeCap.Round)
@@ -752,7 +1130,7 @@ fun BackgroundImageForCard(iconType: String) {
                                 cap = StrokeCap.Round
                             )
                             // Brush tip
-                            drawCircle(
+                drawCircle(
                                 color = Color.White.copy(alpha = 0.2f),
                                 radius = 3f,
                                 center = Offset(x + 20f, y - 5f)

@@ -21,6 +21,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.only
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.*
@@ -100,9 +104,13 @@ fun ClothesChangePage(navController: NavController) {
                 .background(Color.Black.copy(alpha = 0.7f))
         ) {
             com.example.genme.ui.ColorfulBackdrop(primaryColor = primaryColor, accentColor = accentColor)
-            Column(
-                modifier = Modifier.fillMaxSize()
-            ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .windowInsetsPadding(
+                    WindowInsets.safeDrawing.only(WindowInsetsSides.Top + WindowInsetsSides.Bottom)
+                )
+        ) {
             Column(
                 modifier = Modifier
                     .weight(1f)
@@ -423,5 +431,4 @@ fun FuturisticPageTitle() {
         }
     }
 }
-
 

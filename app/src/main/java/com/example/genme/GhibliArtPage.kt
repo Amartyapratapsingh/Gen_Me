@@ -34,6 +34,10 @@ import com.example.genme.ui.TransformButton
 import com.example.genme.utils.rememberImagePicker
 import com.example.genme.viewmodel.TryOnViewModel
 import com.example.genme.viewmodel.TryOnViewModelFactory
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.only
+import androidx.compose.foundation.layout.windowInsetsPadding
 
 @Composable
 fun GhibliArtPage(navController: NavController) {
@@ -61,7 +65,11 @@ fun GhibliArtPage(navController: NavController) {
         ) {
             com.example.genme.ui.ColorfulBackdrop(primaryColor = primaryColor, accentColor = accentColor)
             Column(
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier
+                    .fillMaxSize()
+                    .windowInsetsPadding(
+                        WindowInsets.safeDrawing.only(WindowInsetsSides.Top + WindowInsetsSides.Bottom)
+                    )
             ) {
                 Column(
                     modifier = Modifier

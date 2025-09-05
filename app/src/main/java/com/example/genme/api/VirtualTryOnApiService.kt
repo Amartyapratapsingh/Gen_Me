@@ -2,6 +2,7 @@ package com.example.genme.api
 
 import com.example.genme.api.models.TryOnStartResponse
 import com.example.genme.api.models.TryOnStatusResponse
+import com.example.genme.api.models.HairstyleStartResponse
 import okhttp3.MultipartBody
 import okhttp3.ResponseBody
 import retrofit2.Response
@@ -43,9 +44,21 @@ interface VirtualTryOnApiService {
     ): Response<ResponseBody>
     
     /**
+     * Start a hairstyle change job with correct endpoint from API docs
+     * POST /hair-style/
+     */
+    @Multipart
+    @POST("hair-style/")
+    suspend fun startHairstyleChange(
+        @Part personImage: MultipartBody.Part,
+        @Part("hair_description") hairstyleText: okhttp3.RequestBody
+    ): Response<HairstyleStartResponse>
+    
+    /**
      * Health check endpoint
      * GET /
      */
     @GET("/")
     suspend fun healthCheck(): Response<Map<String, String>>
 }
+

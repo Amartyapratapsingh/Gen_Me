@@ -20,4 +20,25 @@
     <color name="neon_magenta">#FF00FF</color>
     <color name="logo_dark">#000000</color>
     <color name="logo_bg_dark">#0A0A0A</color>
+    
+    <!-- Gen Me Futuristic Glossy Colors -->
+    <color name="glossy_cyan_light">#00FFFF</color>
+    <color name="glossy_cyan_bright">#00E5FF</color>
+    <color name="glossy_cyan_deep">#00B8D4</color>
+    <color name="glossy_purple_light">#E1BEE7</color>
+    <color name="glossy_purple_bright">#9C27B0</color>
+    <color name="glossy_purple_deep">#6A1B9A</color>
+    <color name="glossy_silver">#E8EAF6</color>
+    <color name="glossy_chrome">#F5F5F5</color>
+    <color name="glossy_hologram">#B39DDB</color>
+    
+    <!-- Virtual Style Studio Theme Colors -->
+    <color name="primary_green">#38E07B</color>
+    <color name="secondary_green">#28A058</color>
+    <color name="background_dark">#121212</color>
+    <color name="surface_dark">#1E1E1E</color>
+    <color name="text_primary">#FFFFFF</color>
+    <color name="text_secondary">#B3B3B3</color>
+    <color name="accent_green">#5CE690</color>
+    <color name="glassmorphic_dark">#80282828</color>
 </resources>

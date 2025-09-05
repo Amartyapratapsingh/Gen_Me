@@ -3,33 +3,30 @@ package com.example.genme.viewmodel
 import android.app.Application
 import android.graphics.Bitmap
 import android.net.Uri
-import android.os.Environment
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.example.genme.repository.TryOnResult
-import com.example.genme.repository.VirtualTryOnRepository
+import com.example.genme.repository.HairstyleResult
+import com.example.genme.repository.HairstyleRepository
 import com.example.genme.utils.ImageSaveHelper
-import com.example.genme.utils.SettingsPrefs
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import kotlinx.coroutines.Dispatchers
 import java.io.File
+import android.os.Environment
 
 /**
- * ViewModel for managing virtual try-on operations and UI state
+ * ViewModel for managing hairstyle change operations and UI state
  */
-class TryOnViewModel(application: Application) : AndroidViewModel(application) {
+class HairstyleViewModel(application: Application) : AndroidViewModel(application) {
 
-    private val repository = VirtualTryOnRepository(application)
+    private val repository = HairstyleRepository(application)
     private val imageSaveHelper = ImageSaveHelper(application)
 
-    private val _uiState = MutableStateFlow(TryOnUiState())
-    val uiState: StateFlow<TryOnUiState> = _uiState.asStateFlow()
+    private val _uiState = MutableStateFlow(HairstyleUiState())
+    val uiState: StateFlow<HairstyleUiState> = _uiState.asStateFlow()
 
     private val _galleryImages = MutableStateFlow<List<File>>(emptyList())
     val galleryImages: StateFlow<List<File>> = _galleryImages.asStateFlow()
@@ -46,39 +43,46 @@ class TryOnViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     /**
-     * Set the clothing image URI
+     * Set the selected hairstyle text
      */
-    fun setClothingImage(uri: Uri) {
-        _uiState.value = _uiState.value.copy(clothingImageUri = uri)
+    fun setHairstyleText(hairstyle: String) {
+        _uiState.value = _uiState.value.copy(selectedHairstyle = hairstyle)
     }
 
     /**
-     * Start the virtual try-on process
+     * Start the hairstyle change process
      */
-    fun startTryOn() {
+    fun startHairstyleChange() {
         val currentState = _uiState.value
         val personUri = currentState.personImageUri
-        val clothingUri = currentState.clothingImageUri
+        val hairstyleText = currentState.selectedHairstyle
 
-        if (personUri == null || clothingUri == null) {
+        if (personUri == null) {
             _uiState.value = currentState.copy(
-                errorMessage = "Please select both person and clothing images"
+                errorMessage = "Please select a person image"
+            )
+            return
+        }
+
+        if (hairstyleText.isBlank()) {
+            _uiState.value = currentState.copy(
+                errorMessage = "Please select a hairstyle"
             )
             return
         }
 
         viewModelScope.launch {
-            repository.startTryOnWithPolling(personUri, clothingUri)
+            repository.startHairstyleChangeWithPolling(personUri, hairstyleText)
                 .collect { result ->
                     when (result) {
-                        is TryOnResult.Loading -> {
+                        is HairstyleResult.Loading -> {
                             _uiState.value = _uiState.value.copy(
                                 isLoading = true,
                                 loadingMessage = result.message,
                                 errorMessage = null
                             )
                         }
-                        is TryOnResult.Success -> {
+                        is HairstyleResult.Success -> {
                             _uiState.value = _uiState.value.copy(
                                 isLoading = false,
                                 resultImage = result.resultImage,
@@ -87,7 +91,7 @@ class TryOnViewModel(application: Application) : AndroidViewModel(application) {
                                 errorMessage = null
                             )
                         }
-                        is TryOnResult.Error -> {
+                        is HairstyleResult.Error -> {
                             _uiState.value = _uiState.value.copy(
                                 isLoading = false,
                                 errorMessage = result.message,
@@ -107,27 +111,20 @@ class TryOnViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     /**
-     * Clear the selected images
+     * Clear the selected images and result
      */
     fun clearImages() {
-        _uiState.value = _uiState.value.copy(personImageUri = null, clothingImageUri = null, resultImage = null)
+        _uiState.value = _uiState.value.copy(
+            personImageUri = null, 
+            resultImage = null
+        )
     }
 
     /**
-     * Reset the try-on process
+     * Reset the hairstyle change process
      */
     fun reset() {
-        _uiState.value = TryOnUiState()
-    }
-
-    /**
-     * Check if ready to start try-on
-     */
-    fun isReadyToStart(): Boolean {
-        val state = _uiState.value
-        return state.personImageUri != null &&
-               state.clothingImageUri != null &&
-               !state.isLoading
+        _uiState.value = HairstyleUiState()
     }
 
     /**
@@ -165,16 +162,13 @@ class TryOnViewModel(application: Application) : AndroidViewModel(application) {
             // Show saving state
             _uiState.value = currentState.copy(isSaving = true)
 
-            val filename = imageSaveHelper.generateFilename("GenMe")
-            val ctx = getApplication<Application>()
-            val highQuality = SettingsPrefs.getBool(ctx, SettingsPrefs.KEY_HIGH_QUALITY, true)
-            val quality = if (highQuality) 95 else 85
-            val result = imageSaveHelper.saveImageToGallery(resultBitmap, filename, quality = quality)
+            val filename = imageSaveHelper.generateFilename("GenMe_Hairstyle")
+            val result = imageSaveHelper.saveImageToGallery(resultBitmap, filename)
 
             if (result.isSuccess) {
                 _uiState.value = _uiState.value.copy(
                     isSaving = false,
-                    saveSuccessMessage = "Image saved to gallery successfully!",
+                    saveSuccessMessage = "Hairstyle image saved to gallery successfully!",
                     savedImageUri = result.getOrNull()
                 )
                 // Refresh gallery images
@@ -215,47 +209,27 @@ class TryOnViewModel(application: Application) : AndroidViewModel(application) {
             }
         }
     }
-
-    /**
-     * Delete all images in the GenMe gallery folder. Returns count deleted.
-     */
-    suspend fun clearGalleryImages(): Int = withContext(Dispatchers.IO) {
-        try {
-            val picturesDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
-            val genMeDir = File(picturesDir, "GenMe")
-            if (genMeDir.exists() && genMeDir.isDirectory) {
-                val files = genMeDir.listFiles { file ->
-                    file.isFile && (file.extension.equals("jpg", ignoreCase = true) ||
-                            file.extension.equals("png", ignoreCase = true))
-                } ?: emptyArray()
-                var deleted = 0
-                files.forEach { f -> if (f.delete()) deleted++ }
-                _galleryImages.value = emptyList()
-                deleted
-            } else 0
-        } catch (_: Exception) { 0 }
-    }
 }
 
 /**
- * Factory for creating a [TryOnViewModel] with a constructor that takes an [Application].
+ * Factory for creating a [HairstyleViewModel] with a constructor that takes an [Application].
  */
-class TryOnViewModelFactory(private val application: Application) : ViewModelProvider.Factory {
+class HairstyleViewModelFactory(private val application: Application) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(TryOnViewModel::class.java)) {
+        if (modelClass.isAssignableFrom(HairstyleViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
-            return TryOnViewModel(application) as T
+            return HairstyleViewModel(application) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }
 }
 
 /**
- * Data class representing the UI state for virtual try-on
+ * Data class representing the UI state for hairstyle change
  */
-data class TryOnUiState(
+data class HairstyleUiState(
     val personImageUri: Uri? = null,
-    val clothingImageUri: Uri? = null,
+    val selectedHairstyle: String = "",
     val isLoading: Boolean = false,
     val loadingMessage: String? = null,
     val resultImage: Bitmap? = null,
@@ -267,20 +241,20 @@ data class TryOnUiState(
     val savedImageUri: Uri? = null
 ) {
     /**
-     * Check if both images are selected
+     * Check if all required inputs are provided
      */
-    val hasAllImages: Boolean
-        get() = personImageUri != null && clothingImageUri != null
+    val hasAllInputs: Boolean
+        get() = personImageUri != null && selectedHairstyle.isNotBlank()
 
     /**
-     * Check if try-on has completed successfully
+     * Check if hairstyle change has completed successfully
      */
     val hasResult: Boolean
         get() = resultImage != null
 
     /**
-     * Check if ready to start try-on
+     * Check if ready to start hairstyle change
      */
-    val canStartTryOn: Boolean
-        get() = hasAllImages && !isLoading && isApiHealthy
+    val canStartHairstyleChange: Boolean
+        get() = hasAllInputs && !isLoading && isApiHealthy
 }

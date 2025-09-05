@@ -15,6 +15,10 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.only
+import androidx.compose.foundation.layout.windowInsetsPadding
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import java.io.File
@@ -58,6 +62,7 @@ fun FullScreenImageViewer(navController: NavController, imagePath: String) {
             onClick = { navController.popBackStack() },
             modifier = Modifier
                 .align(Alignment.TopStart)
+                .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Top))
                 .padding(16.dp)
         ) {
             Icon(

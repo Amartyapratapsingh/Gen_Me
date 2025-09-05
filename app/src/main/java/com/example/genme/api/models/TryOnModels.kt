@@ -13,6 +13,16 @@ data class TryOnStartResponse(
 )
 
 /**
+ * Response model for starting a hairstyle change job
+ */
+data class HairstyleStartResponse(
+    @SerializedName("task_id")
+    val taskId: String,
+    @SerializedName("status")
+    val status: String = "processing"
+)
+
+/**
  * Response model for checking job status
  */
 data class TryOnStatusResponse(
@@ -51,3 +61,4 @@ data class ApiErrorResponse(
     @SerializedName("error")
     val error: String? = null
 )
+

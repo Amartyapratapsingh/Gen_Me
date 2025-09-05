@@ -8,8 +8,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Create
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.Image
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -174,6 +176,148 @@ fun FuturisticBottomNavItem(label: String, isSelected: Boolean, onClick: () -> U
             color = textColor,
             style = MaterialTheme.typography.bodyLarge,
             modifier = Modifier.graphicsLayer(scaleX = scale, scaleY = scale)
+        )
+    }
+}
+
+@Composable
+fun NeonGlassBottomNav(
+    navController: NavController,
+    currentRoute: String?
+) {
+    val inactive = Color.White.copy(alpha = 0.6f)
+    val active = Color.White
+    val cyan = Color(0xFF22D3EE)
+    val purple = Color(0xFF7C3AED)
+
+    Column(modifier = Modifier.fillMaxWidth()) {
+        Divider(color = Color.White.copy(alpha = 0.1f), thickness = 1.dp)
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(Color.Black.copy(alpha = 0.3f))
+                .padding(horizontal = 16.dp, vertical = 8.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            // Home
+            NeonNavItem(
+                icon = Icons.Default.Home,
+                label = "Home",
+                selected = currentRoute == "landing_page",
+                activeColor = active,
+                inactiveColor = inactive,
+                onClick = { navController.navigate("landing_page") }
+            )
+
+            // Styles
+            NeonNavItem(
+                icon = ImageVector.vectorResource(id = R.drawable.ic_clothing),
+                label = "Styles",
+                selected = currentRoute == "clothes_change",
+                activeColor = active,
+                inactiveColor = inactive,
+                onClick = { navController.navigate("clothes_change") }
+            )
+
+            // Generate (center highlighted)
+            NeonCenterGenerateItem(
+                selected = currentRoute == "hairstyle_change" || currentRoute == "ghibli_art",
+                gradient = Brush.linearGradient(listOf(cyan, purple)),
+                onClick = { /* Keep on current generation page */ }
+            )
+
+            // Profile
+            NeonNavItem(
+                icon = Icons.Default.Person,
+                label = "Profile",
+                selected = currentRoute == "profile",
+                activeColor = active,
+                inactiveColor = inactive,
+                onClick = { navController.navigate("profile") }
+            )
+
+            // Settings
+            NeonNavItem(
+                icon = Icons.Default.Settings,
+                label = "Settings",
+                selected = currentRoute == "settings",
+                activeColor = active,
+                inactiveColor = inactive,
+                onClick = { navController.navigate("settings") }
+            )
+        }
+        // Bottom safe area tint
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(20.dp)
+                .background(Color.Black.copy(alpha = 0.3f))
+        )
+    }
+}
+
+@Composable
+private fun NeonNavItem(
+    icon: ImageVector,
+    label: String,
+    selected: Boolean,
+    activeColor: Color,
+    inactiveColor: Color,
+    onClick: () -> Unit
+) {
+    val tint by animateColorAsState(if (selected) activeColor else inactiveColor, label = "tint")
+    TextButton(onClick = onClick) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Icon(imageVector = icon, contentDescription = label, tint = tint)
+            Spacer(modifier = Modifier.height(2.dp))
+            Text(text = label, color = tint, style = MaterialTheme.typography.labelSmall)
+        }
+    }
+}
+
+@Composable
+private fun NeonCenterGenerateItem(
+    selected: Boolean,
+    gradient: Brush,
+    onClick: () -> Unit
+) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
+        modifier = Modifier.offset(y = (-12).dp)
+    ) {
+        // Glowing circular button
+        Card(
+            onClick = onClick,
+            shape = RoundedCornerShape(100),
+            colors = CardDefaults.cardColors(containerColor = Color.Transparent),
+            elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+        ) {
+            Box(
+                modifier = Modifier
+                    .background(gradient, shape = RoundedCornerShape(100))
+                    .shadow(
+                        elevation = 16.dp,
+                        shape = RoundedCornerShape(100),
+                        ambientColor = Color(0x8800F6FF),
+                        spotColor = Color(0x887D32FF)
+                    )
+                    .padding(12.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.AutoAwesome,
+                    contentDescription = "Generate",
+                    tint = Color.White,
+                    modifier = Modifier.size(28.dp)
+                )
+            }
+        }
+        Spacer(modifier = Modifier.height(2.dp))
+        Text(
+            text = "Generate",
+            color = if (selected) Color.White else Color.White,
+            style = MaterialTheme.typography.labelSmall
         )
     }
 }

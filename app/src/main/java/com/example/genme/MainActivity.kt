@@ -3,6 +3,8 @@ package com.example.genme
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
+import androidx.core.view.WindowCompat
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -19,10 +21,18 @@ import com.example.genme.viewmodel.TryOnViewModelFactory
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
 import com.example.genme.ui.FullScreenImageViewer
+import com.example.genme.ui.SettingsPage
+import com.example.genme.ui.ProfilePage
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        
+        // Enable edge-to-edge display to remove gaps
+        enableEdgeToEdge()
+        
+        // Make status bar transparent
+        WindowCompat.setDecorFitsSystemWindows(window, false)
         
         val viewModel: TryOnViewModel by lazy {
             ViewModelProvider(this, TryOnViewModelFactory(application)).get(TryOnViewModel::class.java)
@@ -50,6 +60,12 @@ class MainActivity : ComponentActivity() {
                         }
                         composable("gallery") {
                             GalleryScreen(viewModel = viewModel, navController = navController)
+                        }
+                        composable("settings") {
+                            SettingsPage(navController = navController, viewModel = viewModel)
+                        }
+                        composable("profile") {
+                            ProfilePage(navController = navController, viewModel = viewModel)
                         }
                         composable(
                             "full_screen_image/{imagePath}",
