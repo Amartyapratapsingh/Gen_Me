@@ -402,186 +402,70 @@ fun HairstyleChangePage(
                     }
                 }
 
-                Spacer(modifier = Modifier.height(80.dp)) // Space for bottom navigation
-            }
-
-            // Custom Bottom Navigation exactly like HTML with elevated Generate button
-            Box {
-                // Main bottom navigation
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(80.dp),
-                    shape = RoundedCornerShape(topStart = 0.dp, topEnd = 0.dp),
-                    colors = CardDefaults.cardColors(
-                        containerColor = Color.Black.copy(alpha = 0.3f)
-                    ),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
-                ) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(horizontal = 16.dp),
-                        horizontalArrangement = Arrangement.SpaceEvenly,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        // Home
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            modifier = Modifier.clickable { 
-                                navController.navigate("landing_page") {
-                                    popUpTo("landing_page") { inclusive = true }
-                                    launchSingleTop = true
-                                }
-                            }
-                        ) {
-                            Icon(
-                                Icons.Default.Home,
-                                contentDescription = "Home",
-                                tint = Color.Gray,
-                                modifier = Modifier.size(24.dp)
-                            )
-                            Text(
-                                "Home",
-                                color = Color.Gray,
-                                fontSize = 12.sp,
-                                fontWeight = FontWeight.Medium
-                            )
-                        }
-
-                        // Styles
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            modifier = Modifier.clickable { 
-                                navController.navigate("clothes_change") {
-                                    launchSingleTop = true
-                                }
-                            }
-                        ) {
-                            Icon(
-                                Icons.Default.Style,
-                                contentDescription = "Styles", 
-                                tint = Color.Gray,
-                                modifier = Modifier.size(24.dp)
-                            )
-                            Text(
-                                "Styles",
-                                color = Color.Gray,
-                                fontSize = 12.sp,
-                                fontWeight = FontWeight.Medium
-                            )
-                        }
-
-                        // Spacer for elevated button
-                        Spacer(modifier = Modifier.width(56.dp))
-
-                        // Profile
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            modifier = Modifier.clickable { 
-                                navController.navigate("profile") {
-                                    launchSingleTop = true
-                                }
-                            }
-                        ) {
-                            Icon(
-                                Icons.Default.Person,
-                                contentDescription = "Profile",
-                                tint = Color.Gray,
-                                modifier = Modifier.size(24.dp)
-                            )
-                            Text(
-                                "Profile",
-                                color = Color.Gray,
-                                fontSize = 12.sp,
-                                fontWeight = FontWeight.Medium
-                            )
-                        }
-
-                        // Settings
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            modifier = Modifier.clickable { 
-                                navController.navigate("settings") {
-                                    launchSingleTop = true
-                                }
-                            }
-                        ) {
-                            Icon(
-                                Icons.Default.Settings,
-                                contentDescription = "Settings",
-                                tint = Color.Gray,
-                                modifier = Modifier.size(24.dp)
-                            )
-                            Text(
-                                "Settings",
-                                color = Color.Gray,
-                                fontSize = 12.sp,
-                                fontWeight = FontWeight.Medium
-                            )
-                        }
-                    }
-                }
-
-                // Elevated Generate Button (exactly like HTML)
+                // Generate Button - floating action style
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .offset(y = (-28).dp),
+                        .padding(16.dp),
                     contentAlignment = Alignment.Center
                 ) {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally
+                    Button(
+                        onClick = {
+                            if (uiState.personImageUri != null) {
+                                viewModel.startHairstyleChange()
+                            }
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(56.dp),
+                        shape = RoundedCornerShape(16.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color.Transparent
+                        ),
+                        contentPadding = PaddingValues(0.dp),
+                        elevation = ButtonDefaults.buttonElevation(
+                            defaultElevation = 8.dp,
+                            pressedElevation = 4.dp
+                        )
                     ) {
-                        Button(
-                            onClick = {
-                                if (uiState.personImageUri != null) {
-                                    viewModel.startHairstyleChange()
-                                }
-                            },
-                            modifier = Modifier.size(56.dp),
-                            shape = CircleShape,
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = Color.Transparent
-                            ),
-                            contentPadding = PaddingValues(0.dp),
-                            elevation = ButtonDefaults.buttonElevation(
-                                defaultElevation = 12.dp,
-                                pressedElevation = 8.dp
-                            )
-                        ) {
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .background(
-                                        brush = Brush.radialGradient(
-                                            colors = listOf(
-                                                Color(0xFF22D3EE),
-                                                Color(0xFF7C3AED)
-                                            )
-                                        ),
-                                        shape = CircleShape
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .background(
+                                    brush = Brush.horizontalGradient(
+                                        colors = listOf(
+                                            Color(0xFF00B8FF),  // App cyan
+                                            Color(0xFF8338EC),  // App purple
+                                            Color(0xFF00F5D4)   // App teal
+                                        )
                                     ),
-                                contentAlignment = Alignment.Center
+                                    shape = RoundedCornerShape(16.dp)
+                                ),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(8.dp)
                             ) {
                                 Icon(
                                     Icons.Default.AutoAwesome,
                                     contentDescription = "Generate",
                                     tint = Color.White,
-                                    modifier = Modifier.size(28.dp)
+                                    modifier = Modifier.size(24.dp)
+                                )
+                                Text(
+                                    text = "Generate Hairstyle",
+                                    color = Color.White,
+                                    fontSize = 16.sp,
+                                    fontWeight = FontWeight.Bold
                                 )
                             }
                         }
-                        
-                        Text(
-                            text = "Generate",
-                            color = Color.White,
-                            fontSize = 12.sp,
-                            fontWeight = FontWeight.Medium,
-                            modifier = Modifier.padding(top = 4.dp)
-                        )
                     }
                 }
+                
+                // Space for main bottom navigation
+                Spacer(modifier = Modifier.height(100.dp))
             }
         }
     }
