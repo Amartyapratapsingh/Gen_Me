@@ -1,0 +1,300 @@
+                activeColor = active,
+                inactiveColor = inactive,
+                onClick = { navController.navigate("gallery") }
+            )
+
+            // Generate (center highlighted)
+            NeonCenterGenerateItem(
+                selected = currentRoute == "hairstyle_change" || currentRoute == "ghibli_art",
+                gradient = Brush.linearGradient(listOf(appCyan, appPurple, appTeal)),
+                onClick = onShowGeneratePopup
+            )
+
+            // Profile button routes to Coins page
+            NeonNavItem(
+                icon = Icons.Default.Person,
+                label = "Profile",
+                selected = currentRoute == "coins",
+                activeColor = active,
+                inactiveColor = inactive,
+                onClick = { navController.navigate("coins") }
+            )
+
+            // Settings
+            NeonNavItem(
+                icon = Icons.Default.Settings,
+                label = "Settings",
+                selected = currentRoute == "settings",
+                activeColor = active,
+                inactiveColor = inactive,
+                onClick = { navController.navigate("settings") }
+            )
+        }
+        
+        // Bottom safe area with matching glassmorphism gradient
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(20.dp)
+                .background(
+                    Brush.horizontalGradient(
+                        colors = listOf(
+                            Color(0xFF0D0D1A).copy(alpha = 0.85f),
+                            Color(0xFF1A1A2E).copy(alpha = 0.90f),
+                            Color(0xFF0D0D1A).copy(alpha = 0.85f)
+                        )
+                    )
+                )
+                .background(
+                    Brush.horizontalGradient(
+                        colors = listOf(
+                            appCyan.copy(alpha = 0.05f),
+                            appPurple.copy(alpha = 0.08f),
+                            appTeal.copy(alpha = 0.05f)
+                        )
+                    )
+                )
+        )
+    }
+}
+
+@Composable
+private fun NeonNavItem(
+    icon: ImageVector,
+    label: String,
+    selected: Boolean,
+    activeColor: Color,
+    inactiveColor: Color,
+    onClick: () -> Unit
+) {
+    val tint by animateColorAsState(if (selected) activeColor else inactiveColor, label = "tint")
+    TextButton(onClick = onClick) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Icon(imageVector = icon, contentDescription = label, tint = tint)
+            Spacer(modifier = Modifier.height(2.dp))
+            Text(text = label, color = tint, style = MaterialTheme.typography.labelSmall)
+        }
+    }
+}
+
+@Composable
+private fun NeonCenterGenerateItem(
+    selected: Boolean,
+    gradient: Brush,
+    onClick: () -> Unit
+) {
+    // App signature colors for glow effects
+    val appCyan = Color(0xFF00B8FF)
+    val appPurple = Color(0xFF8338EC)
+    
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
+        modifier = Modifier.offset(y = (-12).dp)
+    ) {
+        // Glowing circular button with app-themed glow
+        Card(
+            onClick = onClick,
+            shape = RoundedCornerShape(100),
+            colors = CardDefaults.cardColors(containerColor = Color.Transparent),
+            elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
+            modifier = Modifier.shadow(
+                elevation = 16.dp,
+                shape = RoundedCornerShape(100),
+                ambientColor = appCyan.copy(alpha = 0.6f),  // Cyan glow
+                spotColor = appPurple.copy(alpha = 0.5f)    // Purple glow
+            )
+        ) {
+            Box(
+                modifier = Modifier
+                    .background(gradient, shape = RoundedCornerShape(100))
+                    .padding(12.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = Icons.Default.AutoAwesome,
+                    contentDescription = "Generate",
+                    tint = Color.White,
+                    modifier = Modifier.size(28.dp)
+                )
+            }
+        }
+        Spacer(modifier = Modifier.height(2.dp))
+        Text(
+            text = "Generate",
+            color = Color.White,
+            style = MaterialTheme.typography.labelSmall
+        )
+    }
+}
+
+@Composable
+fun GenerateOptionsPopup(
+    onDismiss: () -> Unit,
+    onGenerateOutfit: () -> Unit,
+    onGenerateHairstyle: () -> Unit
+) {
+    // Backdrop
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.Black.copy(alpha = 0.6f))
+            .clickable { onDismiss() },
+        contentAlignment = Alignment.BottomCenter
+    ) {
+        // Popup container with pointer
+        Column(
+            modifier = Modifier
+                .wrapContentSize()
+                .padding(bottom = 100.dp), // Space above the navbar
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            // Main Popup Card
+            Card(
+                modifier = Modifier
+                    .width(280.dp)
+                    .wrapContentHeight()
+                    .clickable { }, // Prevent backdrop click from closing
+                shape = RoundedCornerShape(20.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = Color(0xFF1A1A2E)
+                ),
+                elevation = CardDefaults.cardElevation(defaultElevation = 20.dp)
+            ) {
+            Column(
+                modifier = Modifier.padding(20.dp)
+            ) {
+                // Header with title and close button
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "Generate",
+                        color = Color.White,
+                        style = MaterialTheme.typography.headlineSmall,
+                        fontWeight = FontWeight.Bold
+                    )
+                    IconButton(onClick = onDismiss) {
+                        Icon(
+                            imageVector = Icons.Default.Close,
+                            contentDescription = "Close",
+                            tint = Color.White.copy(alpha = 0.7f)
+                        )
+                    }
+                }
+                
+                Spacer(modifier = Modifier.height(16.dp))
+                
+                // Generate Outfit Option
+                GenerateOptionItem(
+                    icon = ImageVector.vectorResource(id = R.drawable.ic_clothing),
+                    title = "Generate Outfit",
+                    subtitle = "Create a new outfit from scratch",
+                    onClick = {
+                        onGenerateOutfit()
+                        onDismiss()
+                    }
+                )
+                
+                Spacer(modifier = Modifier.height(12.dp))
+                
+                // Generate Hairstyle Option
+                GenerateOptionItem(
+                    icon = Icons.Default.AutoAwesome,
+                    title = "Generate Hairstyle", 
+                    subtitle = "Try on a new hairstyle",
+                    onClick = {
+                        onGenerateHairstyle()
+                        onDismiss()
+                    }
+                )
+            }
+        }
+            
+            // Small pointer triangle pointing down to the generate button
+            Canvas(
+                modifier = Modifier
+                    .size(16.dp)
+                    .offset(y = (-1).dp) // Slightly overlap with card
+            ) {
+                val path = Path().apply {
+                    moveTo(size.width / 2f, size.height)
+                    lineTo(0f, 0f)
+                    lineTo(size.width, 0f)
+                    close()
+                }
+                drawPath(
+                    path = path,
+                    color = androidx.compose.ui.graphics.Color(0xFF1A1A2E)
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun GenerateOptionItem(
+    icon: ImageVector,
+    title: String,
+    subtitle: String,
+    onClick: () -> Unit
+) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onClick() },
+        shape = RoundedCornerShape(12.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = Color(0xFF2A2A3E)
+        )
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            // Icon with background
+            Box(
+                modifier = Modifier
+                    .size(48.dp)
+                    .background(
+                        brush = Brush.linearGradient(
+                            colors = listOf(
+                                Color(0xFF00B8FF).copy(alpha = 0.2f),
+                                Color(0xFF8338EC).copy(alpha = 0.2f)
+                            )
+                        ),
+                        shape = RoundedCornerShape(12.dp)
+                    ),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = title,
+                    tint = Color(0xFF00B8FF),
+                    modifier = Modifier.size(24.dp)
+                )
+            }
+            
+            Spacer(modifier = Modifier.width(16.dp))
+            
+            // Text content
+            Column {
+                Text(
+                    text = title,
+                    color = Color.White,
+                    style = MaterialTheme.typography.bodyLarge,
+                    fontWeight = FontWeight.SemiBold
+                )
+                Text(
+                    text = subtitle,
+                    color = Color.White.copy(alpha = 0.7f),
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            }
+        }
+    }
+}

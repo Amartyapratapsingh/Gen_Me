@@ -885,11 +885,11 @@ fun HtmlStyleBottomNav(
                     HtmlBottomNavItem(
                         iconType = "profile",
                         label = "Profile",
-                        isSelected = currentRoute == "profile",
+                        isSelected = currentRoute == "coins",
                         primaryColor = primaryColor,
                         textSecondary = textSecondary,
-                        onClick = {
-                            navController.navigate("profile") {
+                        onClick = { 
+                            navController.navigate("coins") {
                                 launchSingleTop = true
                             }
                         }

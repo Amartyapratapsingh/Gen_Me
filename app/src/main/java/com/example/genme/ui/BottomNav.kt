@@ -98,14 +98,14 @@ fun StitchBottomNav(
                 onClick = { navController.navigate("ghibli_art") }
             )
 
-            // Profile
+            // Profile button routes to Coins page
             StitchNavItem(
                 icon = Icons.Default.Person,
                 label = "Profile",
-                selected = currentRoute == "profile",
+                selected = currentRoute == "coins",
                 selectedColor = selected,
                 unselectedColor = unselected,
-                onClick = { navController.navigate("profile") }
+                onClick = { navController.navigate("coins") }
             )
 
             // Settings
@@ -446,14 +446,14 @@ fun NeonGlassBottomNav(
                 onClick = onShowGeneratePopup
             )
 
-            // Profile
+            // Profile button routes to Coins page
             NeonNavItem(
                 icon = Icons.Default.Person,
                 label = "Profile",
-                selected = currentRoute == "profile",
+                selected = currentRoute == "coins",
                 activeColor = active,
                 inactiveColor = inactive,
-                onClick = { navController.navigate("profile") }
+                onClick = { navController.navigate("coins") }
             )
 
             // Settings
