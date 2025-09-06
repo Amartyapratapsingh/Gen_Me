@@ -112,10 +112,10 @@ fun LandingPage(navController: NavController) {
                     borderBrush = borderBrush,
                     onCloth = { navController.navigate("clothes_change") },
                     onHair = { navController.navigate("hairstyle_change") },
-                    onBackground = { navController.navigate("gallery") },
-                    onAvatar = { navController.navigate("profile") },
-                    onFilters = { navController.navigate("gallery") },
-                    onFaceGen = { navController.navigate("ghibli_art") }
+                    onBackground = { /* disabled: no navigation */ },
+                    onAvatar = { navController.navigate("ghibli_art") },
+                    onFilters = { /* disabled: no navigation */ },
+                    onFaceGen = { /* disabled: no navigation */ }
                 )
                 Spacer(Modifier.height(12.dp))
             }

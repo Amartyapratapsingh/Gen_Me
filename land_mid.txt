@@ -1,0 +1,220 @@
+) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Card(
+            onClick = onClick,
+            shape = shape,
+            colors = CardDefaults.cardColors(containerColor = Color.Transparent),
+            modifier = Modifier
+                .width(220.dp)
+                .aspectRatio(4f / 5f)
+                .border(width = 1.dp, brush = borderBrush, shape = shape)
+                .clip(shape)
+        ) {
+            AsyncImage(
+                model = imageUrl,
+                contentDescription = label,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.fillMaxSize()
+            )
+        }
+        Spacer(Modifier.height(8.dp))
+        Text(text = label, color = Color.White, fontSize = 16.sp, fontWeight = FontWeight.Medium)
+    }
+}
+
+@Composable
+private fun ToolsGrid(
+    borderBrush: Brush,
+    onCloth: () -> Unit,
+    onHair: () -> Unit,
+    onBackground: () -> Unit,
+    onAvatar: () -> Unit,
+    onFilters: () -> Unit,
+    onFaceGen: () -> Unit
+) {
+    val items = listOf(
+        ToolItem("Cloth Changer", "https://lh3.googleusercontent.com/aida-public/AB6AXuByBrv5HWyaUW6dcqh6x24r6rKxTwd70UFFwQPhnbPyr1aKkUVm6EYmKeKIRKUWviR7cy9d95aqDIC9pimEmGeShKUZO7RRGFpPDPdC71ZfA3O0IxT1KEgVWyC3N02niqoKEcFwSZW_LoyZLVBDGdYDAtbmp_MHgH2DM5mTQb5bRiXIAwRcZu3Hkg5QKvcwVfHWVc-wiEFaTcSF1LtXPvruXn3wKE5d6ceuFoeWRijX1LMVrf8UKUQFedXDwVfs4ynHdKMfOJqrbOA", onCloth),
+        ToolItem("Hairstyle Changer", "https://lh3.googleusercontent.com/aida-public/AB6AXuBaThVtERU-QuL7WFIzM1qGp7bbh63c4aYpAlBewkTntAwe8M-O5Qi8DTkvk5B_K_KifruWkeGxUzLck2W6U5IzQq-Jfl7mEiAhJkVUHHP0A8MHLqU8HCh6YW02c9L6yLh3Juyhm7o0J_WV6sSKIFTt72LhXh6-R7xSnqIte4cl6IRwf7ESU_-6l8RJXMbjZeOrLELInWgBpAJEeaOTO2N1DDloamypwnXENfC6ZMyEEjyQ4_IDfI1RzymGuB7lC-xkEpzCkGPyywQ", onHair),
+        ToolItem("Background Changer", "https://lh3.googleusercontent.com/aida-public/AB6AXuBPjm2PnlRLSMgFsUUMJhmEn7KIPjJNulqvxf5ZA0_qaeNBJlU7Xons8vg7jNpH7pWUaHt5L841wDoQkbZsyhsNY3Hnz2JHxs14MmesDZwjRKmg6i3CW96q9cc89P48O3t4_5UUgruVWewZrfu8DaRHDI627kYJLed9QSxtxEail2sGwcPd10Be_2bp3wbU_VNjFTdyRVihB7j6YIUs3bF55y2C1m97ULfSvHfVCB2RZtGhPlfiPmbI8Kzf260ADEuANC4Q9a4O4no", onBackground),
+        ToolItem("AI Avatar", "https://lh3.googleusercontent.com/aida-public/AB6AXuBmcQ8w7pSONyGyw3kBA1Pyjg7Vak5RA8_j-Uh1VCPsTFjLm-h5yqzt9lHReaGowbTF2Eh0zi646dz-jUvFycDm9DlOEUapceRqB4-0OfnQQeTkEKSqslKpzkvUyGdC4ottH36IvYRT4KSl1E4LuwpJSK-5lndVt4qoffxOano_cOc7NC4bt9EzKVFNYHu08jidjbtj3jkgf3l9C0XaTGfu_7idapO317rYEbwjWkJua2o8tDdj3xgw3TRLaDNo7l275QaVMyYgKCE", onAvatar),
+        ToolItem("Filters & Effects", "https://lh3.googleusercontent.com/aida-public/AB6AXuCex02vfyPcb2KWlS_DRDarjZMGpivKgrSX0_UxRY_2OkOztrFXzAnlu3GS8u6Q0QJbQzSS5qXg6Ud29-xCClW3S_hSZh3B83fChQAtiUg-QXSCtLclRhEYS9PCFD0U4bbdyPpJfIpSx3-y6Uyts0tJ_hMrk8EGgjTla5aLzhVVThKw0ur3FK6d1alOFvk6dpXbKYdEVGGSFWPio5UHh99nQRIARh1WFK-9GYyXnvcLRbGfXa1sxyHfk3ranusOA65zItpEChZW0n8", onFilters),
+        ToolItem("Face Generator", "https://lh3.googleusercontent.com/aida-public/AB6AXuCtjuaG_csFUAI4u4HEZhOSAv1ks69jxaxSO_IpPh9hhJ2k8CablgNv6_OjEkjr9HNKZ2tbYoyA2rdSmg0xA9P_-PUcq9JmMYNZ2fqZ8Qe0Vp3vUXG1a0UzZC8LsrxqdcecZsAiphg9yZiftWuJzDSRLAdPpIaiV9IVTEckY-cl208SZb_2y08-jN_gjMHXptFaLk0rxevDFkjrpYDJ6nBg0f3MXgeiuKYriSjescJPh3F6wrovkfA3p9E4mleLXqqVhcgEmFIvkSc", onFaceGen)
+    )
+
+    Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
+        for (row in items.chunked(2)) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                row.forEach { item ->
+                    ToolCard(item = item, borderBrush = borderBrush, modifier = Modifier.weight(1f))
+                }
+                if (row.size == 1) Spacer(Modifier.weight(1f))
+            }
+            Spacer(Modifier.height(12.dp))
+        }
+    }
+}
+
+private data class ToolItem(val title: String, val imageUrl: String, val onClick: () -> Unit)
+
+@Composable
+private fun ToolCard(item: ToolItem, borderBrush: Brush, modifier: Modifier = Modifier) {
+    val shape = RoundedCornerShape(16.dp)
+    Row(
+        modifier = modifier
+            .clip(shape)
+            .background(Color(0x991A1A2E))
+            .border(width = 1.dp, brush = borderBrush, shape = shape)
+            .clickable { item.onClick() }
+            .padding(12.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        AsyncImage(
+            model = item.imageUrl,
+            contentDescription = item.title,
+            modifier = Modifier.size(48.dp).clip(RoundedCornerShape(8.dp)),
+            contentScale = ContentScale.Crop
+        )
+        Text(text = item.title, color = Color.White, fontWeight = FontWeight.SemiBold, fontSize = 14.sp)
+    }
+}
+
+@Composable
+private fun FooterNav(
+    onHome: () -> Unit,
+    onStyles: () -> Unit,
+    onGenerate: () -> Unit,
+    onProfile: () -> Unit
+) {
+    val pillBrush = Brush.linearGradient(listOf(Color(0xFF00B8FF), Color(0xFF8338EC)))
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(Color(0xCC0D0D1A))
+            .padding(horizontal = 12.dp, vertical = 8.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        FooterItemSelected(label = "Home", brush = pillBrush, onClick = onHome)
+        FooterItem(iconRes = R.drawable.ic_clothing, label = "Styles", onClick = onStyles)
+        FooterItem(iconRes = R.drawable.ic_gibli, label = "Generate", onClick = onGenerate)
+        FooterItem(iconRes = R.drawable.ic_person, label = "Profile", onClick = onProfile)
+    }
+}
+
+@Composable
+private fun FooterItem(iconRes: Int, label: String, onClick: () -> Unit) {
+    Column(
+        modifier = Modifier.clickable { onClick() },
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Icon(painter = painterResource(id = iconRes), contentDescription = label, tint = Color.White.copy(0.6f), modifier = Modifier.size(24.dp))
+        Text(text = label, color = Color.White.copy(0.6f), fontSize = 12.sp)
+    }
+}
+
+@Composable
+private fun FooterItemSelected(label: String, brush: Brush, onClick: () -> Unit) {
+    Column(
+        modifier = Modifier.clickable { onClick() },
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Box(
+            modifier = Modifier
+                .size(width = 64.dp, height = 32.dp)
+                .clip(RoundedCornerShape(100))
+                .background(brush)
+                .padding(4.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(imageVector = Icons.Filled.Home, contentDescription = label, tint = Color.White)
+        }
+        Text(text = label, color = Color.White, fontSize = 12.sp)
+    }
+}
+
+@Composable
+fun PremiumHeroSection(
+    primaryColor: Color,
+    accentColor: Color,
+    textSecondary: Color,
+    onTryClothes: () -> Unit,
+    onTryHair: () -> Unit
+) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 12.dp),
+        shape = RoundedCornerShape(28.dp),
+        colors = CardDefaults.cardColors(containerColor = Color(0x66282828)),
+        border = BorderStroke(1.dp, Color.White.copy(alpha = 0.08f)),
+        elevation = CardDefaults.cardElevation(defaultElevation = 12.dp)
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(
+                    brush = Brush.linearGradient(
+                        colors = listOf(
+                            Color(0x33FFFFFF),
+                            Color.Transparent
+                        )
+                    )
+                )
+                .padding(24.dp)
+        ) {
+            Column(
+                horizontalAlignment = Alignment.Start,
+                verticalArrangement = Arrangement.spacedBy(14.dp)
+            ) {
+                Text(
+                    text = "GenMe",
+                    fontSize = 14.sp,
+                    color = textSecondary
+                )
+                Text(
+                    text = "Virtual Style Studio",
+                    fontSize = 36.sp,
+                    fontWeight = FontWeight.ExtraBold,
+                    style = androidx.compose.ui.text.TextStyle(
+                        brush = Brush.linearGradient(colors = listOf(primaryColor, accentColor))
+                    )
+                )
+                Text(
+                    text = "AI‑powered try‑ons. New looks in seconds.",
+                    fontSize = 16.sp,
+                    color = Color.White.copy(alpha = 0.9f)
+                )
+
+                Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                    Button(
+                        onClick = onTryClothes,
+                        colors = ButtonDefaults.buttonColors(containerColor = primaryColor),
+                        shape = RoundedCornerShape(20.dp)
+                    ) { Text("Try Clothes", color = Color.Black, fontWeight = FontWeight.Bold) }
+
+                    OutlinedButton(
+                        onClick = onTryHair,
+                        shape = RoundedCornerShape(20.dp),
+                        border = BorderStroke(1.dp, primaryColor.copy(alpha = 0.7f)),
+                        colors = ButtonDefaults.outlinedButtonColors(contentColor = primaryColor)
+                    ) { Text("Change Hairstyle") }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun PremiumFeatureGrid(
+    primaryColor: Color,
+    textSecondary: Color,
+    onClothes: () -> Unit,
+    onHair: () -> Unit,
+    onArt: () -> Unit,
+    onGallery: () -> Unit

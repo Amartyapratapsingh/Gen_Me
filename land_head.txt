@@ -1,0 +1,150 @@
+package com.example.genme
+
+import androidx.compose.animation.core.*
+import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Create
+import androidx.compose.material.icons.filled.Face
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.*
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.only
+import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.*
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.graphics.*
+import androidx.compose.ui.graphics.drawscope.DrawScope
+import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.drawscope.rotate
+import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.graphics.Shadow
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
+import com.example.genme.ui.FuturisticBottomNav
+import com.example.genme.ui.HtmlStyleBottomNav
+import com.example.genme.R
+import coil.compose.AsyncImage
+import kotlin.math.*
+import kotlin.random.Random
+
+@Composable
+fun LandingPage(navController: NavController) {
+    val bg = Color(0xFF0D0D1A)
+    val borderBrush = Brush.linearGradient(
+        colors = listOf(Color(0xFF00B8FF), Color(0xFF8338EC), Color(0xFF00F5D4))
+    )
+
+    Box(modifier = Modifier.fillMaxSize().background(bg)) {
+        // Soft top glow
+    Box(
+        modifier = Modifier
+                .fillMaxWidth()
+                .height(240.dp)
+            .background(
+                    Brush.linearGradient(
+                        listOf(Color(0x3300B8FF), Color(0x338338EC), Color(0x3300F5D4))
+                    )
+                )
+                .align(Alignment.TopCenter)
+        )
+
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .windowInsetsPadding(
+                    WindowInsets.safeDrawing.only(WindowInsetsSides.Top + WindowInsetsSides.Bottom)
+                )
+        ) {
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .verticalScroll(rememberScrollState())
+            ) {
+                TopHeader(onSettings = { navController.navigate("settings") })
+                SearchBar()
+                FeatureCarousel(
+                    onOutfits = { navController.navigate("clothes_change") },
+                    onHairstyle = { navController.navigate("hairstyle_change") },
+                    onAvatars = { navController.navigate("ghibli_art") },
+                    borderBrush = borderBrush
+                )
+                Text(
+                    text = "Tools",
+                    color = Color.White,
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                )
+                ToolsGrid(
+                    borderBrush = borderBrush,
+                    onCloth = { navController.navigate("clothes_change") },
+                    onHair = { navController.navigate("hairstyle_change") },
+                    onBackground = { navController.navigate("gallery") },
+                    onAvatar = { navController.navigate("profile") },
+                    onFilters = { navController.navigate("gallery") },
+                    onFaceGen = { navController.navigate("ghibli_art") }
+                )
+                Spacer(Modifier.height(12.dp))
+            }
+            // Bottom nav provided by MainActivity Scaffold
+        }
+    }
+}
+
+@Composable
+private fun TopHeader(onSettings: () -> Unit) {
+    Row(
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Spacer(Modifier.width(48.dp))
+        Text(
+            text = "Gen ME",
+            color = Color.White,
+            fontWeight = FontWeight.Bold,
+            fontSize = 20.sp,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.weight(1f).padding(horizontal = 8.dp)
+        )
+        IconButton(onClick = onSettings, modifier = Modifier.size(40.dp)) {
+            Icon(imageVector = Icons.Filled.Settings, contentDescription = "Settings", tint = Color.White)
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
