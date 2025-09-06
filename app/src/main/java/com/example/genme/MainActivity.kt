@@ -5,6 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.core.view.WindowCompat
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
@@ -13,6 +14,9 @@ import androidx.compose.material3.Surface
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.Modifier
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -29,6 +33,7 @@ import com.example.genme.ui.FullScreenImageViewer
 import com.example.genme.ui.SettingsPage
 import com.example.genme.ui.ProfilePage
 import com.example.genme.ui.NeonGlassBottomNav
+import com.example.genme.ui.GenerateOptionsPopup
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -53,16 +58,21 @@ class MainActivity : ComponentActivity() {
                     val navController = rememberNavController()
                     val navBackStackEntry by navController.currentBackStackEntryAsState()
                     val currentRoute = navBackStackEntry?.destination?.route
+                    
+                    // State for Generate Options Popup
+                    var showGeneratePopup by remember { mutableStateOf(false) }
 
-                    Scaffold(
-                        bottomBar = {
-                            // Use the working dark navigation implementation
-                            NeonGlassBottomNav(
-                                navController = navController,
-                                currentRoute = currentRoute
-                            )
-                        }
-                    ) { innerPadding ->
+                    Box(modifier = Modifier.fillMaxSize()) {
+                        Scaffold(
+                            bottomBar = {
+                                // Use the working dark navigation implementation
+                                NeonGlassBottomNav(
+                                    navController = navController,
+                                    currentRoute = currentRoute,
+                                    onShowGeneratePopup = { showGeneratePopup = true }
+                                )
+                            }
+                        ) { innerPadding ->
                         NavHost(
                             navController = navController,
                             startDestination = "landing_page",
@@ -84,6 +94,16 @@ class MainActivity : ComponentActivity() {
                                     imagePath = backStackEntry.arguments?.getString("imagePath") ?: ""
                                 )
                             }
+                        }
+                        }
+                        
+                        // Generate Options Popup Overlay
+                        if (showGeneratePopup) {
+                            GenerateOptionsPopup(
+                                onDismiss = { showGeneratePopup = false },
+                                onGenerateOutfit = { navController.navigate("clothes_change") },
+                                onGenerateHairstyle = { navController.navigate("hairstyle_change") }
+                            )
                         }
                     }
                 }

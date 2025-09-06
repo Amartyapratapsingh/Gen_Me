@@ -6,7 +6,12 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Create
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.AutoAwesome
@@ -361,7 +366,8 @@ fun FuturisticBottomNavItem(label: String, isSelected: Boolean, onClick: () -> U
 @Composable
 fun NeonGlassBottomNav(
     navController: NavController,
-    currentRoute: String?
+    currentRoute: String?,
+    onShowGeneratePopup: () -> Unit = {}
 ) {
     // Match the app's signature color scheme
     val inactive = Color.White.copy(alpha = 0.7f)
@@ -437,7 +443,7 @@ fun NeonGlassBottomNav(
             NeonCenterGenerateItem(
                 selected = currentRoute == "hairstyle_change" || currentRoute == "ghibli_art",
                 gradient = Brush.linearGradient(listOf(appCyan, appPurple, appTeal)),
-                onClick = { navController.navigate("ghibli_art") }
+                onClick = onShowGeneratePopup
             )
 
             // Profile
@@ -555,5 +561,176 @@ private fun NeonCenterGenerateItem(
             color = Color.White,
             style = MaterialTheme.typography.labelSmall
         )
+    }
+}
+
+@Composable
+fun GenerateOptionsPopup(
+    onDismiss: () -> Unit,
+    onGenerateOutfit: () -> Unit,
+    onGenerateHairstyle: () -> Unit
+) {
+    // Backdrop
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.Black.copy(alpha = 0.6f))
+            .clickable { onDismiss() },
+        contentAlignment = Alignment.BottomCenter
+    ) {
+        // Popup container with pointer
+        Column(
+            modifier = Modifier
+                .wrapContentSize()
+                .padding(bottom = 100.dp), // Space above the navbar
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            // Main Popup Card
+            Card(
+                modifier = Modifier
+                    .width(280.dp)
+                    .wrapContentHeight()
+                    .clickable { }, // Prevent backdrop click from closing
+                shape = RoundedCornerShape(20.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = Color(0xFF1A1A2E)
+                ),
+                elevation = CardDefaults.cardElevation(defaultElevation = 20.dp)
+            ) {
+            Column(
+                modifier = Modifier.padding(20.dp)
+            ) {
+                // Header with title and close button
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "Generate",
+                        color = Color.White,
+                        style = MaterialTheme.typography.headlineSmall,
+                        fontWeight = FontWeight.Bold
+                    )
+                    IconButton(onClick = onDismiss) {
+                        Icon(
+                            imageVector = Icons.Default.Close,
+                            contentDescription = "Close",
+                            tint = Color.White.copy(alpha = 0.7f)
+                        )
+                    }
+                }
+                
+                Spacer(modifier = Modifier.height(16.dp))
+                
+                // Generate Outfit Option
+                GenerateOptionItem(
+                    icon = ImageVector.vectorResource(id = R.drawable.ic_clothing),
+                    title = "Generate Outfit",
+                    subtitle = "Create a new outfit from scratch",
+                    onClick = {
+                        onGenerateOutfit()
+                        onDismiss()
+                    }
+                )
+                
+                Spacer(modifier = Modifier.height(12.dp))
+                
+                // Generate Hairstyle Option
+                GenerateOptionItem(
+                    icon = Icons.Default.AutoAwesome,
+                    title = "Generate Hairstyle", 
+                    subtitle = "Try on a new hairstyle",
+                    onClick = {
+                        onGenerateHairstyle()
+                        onDismiss()
+                    }
+                )
+            }
+        }
+            
+            // Small pointer triangle pointing down to the generate button
+            Canvas(
+                modifier = Modifier
+                    .size(16.dp)
+                    .offset(y = (-1).dp) // Slightly overlap with card
+            ) {
+                val path = Path().apply {
+                    moveTo(size.width / 2f, size.height)
+                    lineTo(0f, 0f)
+                    lineTo(size.width, 0f)
+                    close()
+                }
+                drawPath(
+                    path = path,
+                    color = androidx.compose.ui.graphics.Color(0xFF1A1A2E)
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun GenerateOptionItem(
+    icon: ImageVector,
+    title: String,
+    subtitle: String,
+    onClick: () -> Unit
+) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onClick() },
+        shape = RoundedCornerShape(12.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = Color(0xFF2A2A3E)
+        )
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            // Icon with background
+            Box(
+                modifier = Modifier
+                    .size(48.dp)
+                    .background(
+                        brush = Brush.linearGradient(
+                            colors = listOf(
+                                Color(0xFF00B8FF).copy(alpha = 0.2f),
+                                Color(0xFF8338EC).copy(alpha = 0.2f)
+                            )
+                        ),
+                        shape = RoundedCornerShape(12.dp)
+                    ),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = title,
+                    tint = Color(0xFF00B8FF),
+                    modifier = Modifier.size(24.dp)
+                )
+            }
+            
+            Spacer(modifier = Modifier.width(16.dp))
+            
+            // Text content
+            Column {
+                Text(
+                    text = title,
+                    color = Color.White,
+                    style = MaterialTheme.typography.bodyLarge,
+                    fontWeight = FontWeight.SemiBold
+                )
+                Text(
+                    text = subtitle,
+                    color = Color.White.copy(alpha = 0.7f),
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            }
+        }
     }
 }
