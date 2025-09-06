@@ -73,14 +73,14 @@ fun StitchBottomNav(
                 onClick = { navController.navigate("landing_page") }
             )
 
-            // Styles
+            // Gallery
             StitchNavItem(
-                icon = ImageVector.vectorResource(id = R.drawable.ic_clothing),
-                label = "Styles",
-                selected = currentRoute == "clothes_change",
+                icon = ImageVector.vectorResource(id = R.drawable.ic_gallery),
+                label = "Gallery",
+                selected = currentRoute == "gallery",
                 selectedColor = selected,
                 unselectedColor = unselected,
-                onClick = { navController.navigate("clothes_change") }
+                onClick = { navController.navigate("gallery") }
             )
 
             // Generate (center highlighted) - HTML: bg-gradient-to-tr from-cyan-400 to-purple-600
@@ -423,14 +423,14 @@ fun NeonGlassBottomNav(
                 onClick = { navController.navigate("landing_page") }
             )
 
-            // Styles
+            // Gallery
             NeonNavItem(
-                icon = ImageVector.vectorResource(id = R.drawable.ic_clothing),
-                label = "Styles",
-                selected = currentRoute == "clothes_change",
+                icon = ImageVector.vectorResource(id = R.drawable.ic_gallery),
+                label = "Gallery",
+                selected = currentRoute == "gallery",
                 activeColor = active,
                 inactiveColor = inactive,
-                onClick = { navController.navigate("clothes_change") }
+                onClick = { navController.navigate("gallery") }
             )
 
             // Generate (center highlighted)
