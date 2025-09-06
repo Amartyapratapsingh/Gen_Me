@@ -1,0 +1,260 @@
+package com.example.genme.ui
+
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.*
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Create
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.AutoAwesome
+import androidx.compose.material.icons.filled.Image
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import com.example.genme.R
+
+@Composable
+fun StitchBottomNav(
+    navController: NavController,
+    currentRoute: String?
+) {
+    // Working colors from hairstyle changer page
+    val unselected = Color.Gray // Exact same as working hairstyle nav
+    val selected = Color.White
+    
+    // Working background from hairstyle changer page  
+    val glassBg = Color.Black.copy(alpha = 0.3f) // This exact line works perfectly in hairstyle page
+
+    Column(modifier = Modifier.fillMaxWidth()) {
+        // HTML equivalent: border-t border-white/10
+        Divider(color = Color.White.copy(alpha = 0.1f), thickness = 1.dp)
+        
+        // EXACT working implementation from hairstyle page middle navigation
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(80.dp),
+            shape = RoundedCornerShape(topStart = 0.dp, topEnd = 0.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = Color.Black.copy(alpha = 0.3f)
+            ),
+            elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 16.dp),
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+            // Home
+            StitchNavItem(
+                icon = Icons.Default.Home,
+                label = "Home",
+                selected = currentRoute == "landing_page",
+                selectedColor = selected,
+                unselectedColor = unselected,
+                onClick = { navController.navigate("landing_page") }
+            )
+
+            // Gallery
+            StitchNavItem(
+                icon = ImageVector.vectorResource(id = R.drawable.ic_gallery),
+                label = "Gallery",
+                selected = currentRoute == "gallery",
+                selectedColor = selected,
+                unselectedColor = unselected,
+                onClick = { navController.navigate("gallery") }
+            )
+
+            // Generate (center highlighted) - HTML: bg-gradient-to-tr from-cyan-400 to-purple-600
+            StitchCenterGenerateItem(
+                selected = currentRoute == "ghibli_art",
+                gradient = Brush.radialGradient(
+                    colors = listOf(Color(0xFF22D3EE), Color(0xFF9333EA)), // cyan-400 to purple-600
+                    radius = 100f
+                ),
+                onClick = { navController.navigate("ghibli_art") }
+            )
+
+            // Profile
+            StitchNavItem(
+                icon = Icons.Default.Person,
+                label = "Profile",
+                selected = currentRoute == "profile",
+                selectedColor = selected,
+                unselectedColor = unselected,
+                onClick = { navController.navigate("profile") }
+            )
+
+            // Settings
+            StitchNavItem(
+                icon = Icons.Default.Settings,
+                label = "Settings",
+                selected = currentRoute == "settings",
+                selectedColor = selected,
+                unselectedColor = unselected,
+                onClick = { navController.navigate("settings") }
+            )
+            }
+        }
+        
+        // Bottom safe area with matching glassmorphism effect (HTML: h-5 bg-black/30)
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(20.dp)
+                .background(Color.Black.copy(alpha = 0.3f))
+        )
+    }
+}
+
+@Composable
+private fun StitchNavItem(
+    icon: ImageVector,
+    label: String,
+    selected: Boolean,
+    selectedColor: Color,
+    unselectedColor: Color,
+    onClick: () -> Unit
+) {
+    val tint = if (selected) selectedColor else unselectedColor
+    
+    // EXACT structure from working hairstyle page navigation
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.clickable { onClick() }
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = label,
+            tint = tint,
+            modifier = Modifier.size(24.dp)
+        )
+        Text(
+            text = label,
+            color = tint,
+            fontSize = 12.sp,
+            fontWeight = FontWeight.Medium
+        )
+    }
+}
+
+@Composable
+private fun StitchCenterGenerateItem(
+    selected: Boolean,
+    gradient: Brush,
+    onClick: () -> Unit
+) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
+        modifier = Modifier.offset(y = (-24).dp)
+    ) {
+        // HTML exact: p-3 rounded-full shadow-[0_0_15px_rgba(0,246,255,0.5)]
+        Card(
+            onClick = onClick,
+            shape = RoundedCornerShape(100),
+            colors = CardDefaults.cardColors(containerColor = Color.Transparent),
+            elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
+            modifier = Modifier.shadow(
+                elevation = 15.dp,
+                shape = RoundedCornerShape(100),
+                ambientColor = Color(0x8000F6FF), // Exact HTML rgba(0,246,255,0.5)
+                spotColor = Color(0x8000F6FF)     // Same cyan glow for consistency
+            )
+        ) {
+            Box(
+                modifier = Modifier
+                    .background(gradient, shape = RoundedCornerShape(100))
+                    .padding(12.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = Icons.Default.AutoAwesome,
+                    contentDescription = "Generate",
+                    tint = Color.White,
+                    modifier = Modifier.size(28.dp)
+                )
+            }
+        }
+        Spacer(modifier = Modifier.height(4.dp))
+        Text(
+            text = "Generate",
+            color = Color.White,
+            fontSize = 12.sp, // Same as working hairstyle nav
+            fontWeight = FontWeight.Medium // Same as working hairstyle nav
+        )
+    }
+}
+
+@Composable
+fun FuturisticBottomNav(navController: NavController, currentRoute: String? = "landing_page") {
+    val borderGlow by rememberInfiniteTransition(label = "nav_glow").animateFloat(
+        initialValue = 0.6f,
+        targetValue = 1f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(2000, easing = LinearEasing),
+            repeatMode = RepeatMode.Reverse
+        ), label = "glow"
+    )
+
+    Card(
+        shape = RoundedCornerShape(28.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = Color(0xFF0D1117)
+        ),
+        modifier = Modifier
+            .fillMaxWidth()
+            .shadow(
+                elevation = 20.dp,
+                shape = RoundedCornerShape(28.dp),
+                ambientColor = Color(0xFF00D4FF).copy(alpha = 0.3f),
+                spotColor = Color(0xFF6366F1).copy(alpha = 0.2f)
+            )
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(
+                    brush = Brush.horizontalGradient(
+                        colors = listOf(
+                            Color(0xFF161B22),
+                            Color(0xFF0D1117),
+                            Color(0xFF161B22)
+                        )
+                    )
+                )
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 48.dp, vertical = 18.dp),
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                FuturisticBottomNavItem("Home", currentRoute == "landing_page", onClick = { navController.navigate("landing_page") })
+                FuturisticBottomNavItem("Gallery", currentRoute == "gallery", onClick = { navController.navigate("gallery") })
+            }
+        }
+    }
+}
+
+
+@Composable

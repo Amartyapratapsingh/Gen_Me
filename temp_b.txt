@@ -1,0 +1,240 @@
+    primaryColor: Color
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        // Back button with glassmorphic style
+        Card(
+            modifier = Modifier
+                .size(48.dp)
+                .clickable { navController.popBackStack() },
+            shape = CircleShape,
+            colors = CardDefaults.cardColors(
+                containerColor = Color(0x80282828)
+            ),
+            border = BorderStroke(1.dp, Color.White.copy(alpha = 0.1f)),
+            elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(
+                        brush = Brush.radialGradient(
+                            colors = listOf(
+                                Color.White.copy(alpha = 0.1f),
+                                Color.Transparent
+                            )
+                        )
+                    ),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = Icons.Default.ArrowBack,
+                    contentDescription = "Back",
+                    tint = Color.White,
+                    modifier = Modifier.size(24.dp)
+                )
+            }
+        }
+        
+        // Title section
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = title,
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.White,
+                textAlign = TextAlign.Center
+            )
+            Text(
+                text = subtitle,
+                fontSize = 12.sp,
+                color = Color.White.copy(alpha = 0.7f),
+                textAlign = TextAlign.Center
+            )
+        }
+        
+        // Spacer to balance the layout
+        Spacer(modifier = Modifier.size(48.dp))
+    }
+}
+
+@Composable
+fun HtmlStyleBottomNav(
+    primaryColor: Color,
+    textSecondary: Color,
+    navController: NavController,
+    currentRoute: String = ""
+) {
+    // Bottom nav with glassmorphic card styling
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp) // Margin around the card
+    ) {
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(24.dp), // Rounded corners
+            colors = CardDefaults.cardColors(
+                containerColor = Color(0x80282828) // Glassmorphic background
+            ),
+            border = BorderStroke(1.dp, Color.White.copy(alpha = 0.1f)),
+            elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(
+                        brush = Brush.verticalGradient(
+                            colors = listOf(
+                                Color(0x80282828),
+                                Color(0x60202020)
+                            )
+                        )
+                    )
+                    .padding(horizontal = 8.dp, vertical = 8.dp) // Inner padding
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceEvenly
+                ) {
+                    HtmlBottomNavItem(
+                        iconType = "home",
+                        label = "Home",
+                        isSelected = currentRoute == "landing_page" || currentRoute == "home" || currentRoute.isEmpty(),
+                        primaryColor = primaryColor,
+                        textSecondary = textSecondary,
+                        onClick = { 
+                            navController.navigate("landing_page") {
+                                // Clear the back stack to prevent crashes when going back to home
+                                popUpTo("landing_page") { inclusive = true }
+                                launchSingleTop = true
+                            }
+                        }
+                    )
+                    
+                    HtmlBottomNavItem(
+                        iconType = "gallery",
+                        label = "Gallery",
+                        isSelected = currentRoute == "gallery",
+                        primaryColor = primaryColor,
+                        textSecondary = textSecondary,
+                        onClick = { 
+                            navController.navigate("gallery") {
+                                launchSingleTop = true
+                            }
+                        }
+                    )
+                    
+                    HtmlBottomNavItem(
+                        iconType = "profile",
+                        label = "Profile",
+                        isSelected = currentRoute == "profile",
+                        primaryColor = primaryColor,
+                        textSecondary = textSecondary,
+                        onClick = {
+                            navController.navigate("profile") {
+                                launchSingleTop = true
+                            }
+                        }
+                    )
+                    
+                    HtmlBottomNavItem(
+                        iconType = "settings",
+                        label = "Settings",
+                        isSelected = currentRoute == "settings",
+                        primaryColor = primaryColor,
+                        textSecondary = textSecondary,
+                        onClick = {
+                            navController.navigate("settings") {
+                                launchSingleTop = true
+                            }
+                        }
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun HtmlBottomNavItem(
+    iconType: String,
+    label: String,
+    isSelected: Boolean,
+    primaryColor: Color,
+    textSecondary: Color,
+    onClick: () -> Unit
+) {
+    val interactionSource = remember { MutableInteractionSource() }
+    
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(4.dp),
+        modifier = Modifier
+            .clickable(
+                interactionSource = interactionSource,
+                indication = null,
+                onClick = onClick
+            )
+            .background(
+                color = if (isSelected) primaryColor.copy(alpha = 0.2f) else Color.Transparent,
+                shape = RoundedCornerShape(16.dp)
+            )
+            .padding(horizontal = 12.dp, vertical = 8.dp)
+    ) {
+        // Custom icons to match design
+        HtmlBottomNavIcon(
+            iconType = iconType,
+            tint = if (isSelected) primaryColor else textSecondary
+        )
+        Text(
+            text = label,
+            fontSize = 12.sp,
+            fontWeight = FontWeight.SemiBold,
+            color = if (isSelected) primaryColor else textSecondary
+        )
+    }
+}
+
+@Composable
+fun HtmlBottomNavIcon(iconType: String, tint: Color) {
+    when (iconType) {
+        "home" -> {
+            Icon(
+                imageVector = Icons.Default.Home,
+                contentDescription = "Home",
+                tint = tint,
+                modifier = Modifier.size(24.dp)
+            )
+        }
+        "gallery" -> {
+            Icon(
+                imageVector = ImageVector.vectorResource(id = R.drawable.ic_gallery),
+                contentDescription = "Gallery",
+                tint = tint,
+                modifier = Modifier.size(24.dp)
+            )
+        }
+        "profile" -> {
+            Icon(
+                imageVector = Icons.Default.Person,
+                contentDescription = "Profile",
+                tint = tint,
+                modifier = Modifier.size(24.dp)
+            )
+        }
+        "settings" -> {
+            Icon(
+                imageVector = Icons.Default.Settings,
+                contentDescription = "Settings",
+                tint = tint,
+                modifier = Modifier.size(24.dp)
+            )
+        }
+    }
+}

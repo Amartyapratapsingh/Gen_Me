@@ -81,11 +81,12 @@ fun ClothesChangePage(navController: NavController) {
         uri?.let { viewModel.setClothingImage(it) }
     }
     
-    // Colors exactly matching homepage
-    val primaryColor = Color(0xFF38E07B)
-    val backgroundColor = Color(0xFF121212)
-    val textSecondary = Color(0xFFB3B3B3)
-    val accentColor = Color(0xFF5CE690)
+    // Neon palette to mirror provided HTML
+    val backgroundColor = Color(0xFF0D0C14)
+    val textSecondary = Color(0xFF9CA3AF)
+    val cyan = Color(0xFF22D3EE)   // tailwind cyan-400
+    val purple = Color(0xFF9333EA) // tailwind purple-600
+    val primaryGlow = listOf(cyan.copy(alpha = 0.4f), purple.copy(alpha = 0.4f))
     
     Box(
         modifier = Modifier.fillMaxSize()
@@ -97,13 +98,17 @@ fun ClothesChangePage(navController: NavController) {
                 .background(backgroundColor)
         )
         
-        // Dark overlay exactly like homepage - FULL SCREEN + subtle colorful gradients
+        // Dark overlay + subtle colorful gradients (matches HTML soft blobs)
         Box(
             modifier = Modifier
                 .fillMaxSize()
                 .background(Color.Black.copy(alpha = 0.7f))
         ) {
-            com.example.genme.ui.ColorfulBackdrop(primaryColor = primaryColor, accentColor = accentColor)
+            // Soft directional gradients for ambient color
+            com.example.genme.ui.ColorfulBackdrop(
+                primaryColor = cyan,
+                accentColor = purple
+            )
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -117,17 +122,17 @@ fun ClothesChangePage(navController: NavController) {
                     .verticalScroll(rememberScrollState())
                     .padding(24.dp)
             ) {
-            // Glassmorphic header matching home page
-            GlasmorphicPageHeader(
-                title = "Clothes Changer",
-                subtitle = "Transform your style with AI",
-                navController = navController,
-                primaryColor = primaryColor
+            // Minimal header like HTML (back + centered title)
+            HtmlLikeHeader(
+                title = "Generate",
+                onBack = { navController.popBackStack() }
             )
-            
+
+            Spacer(modifier = Modifier.height(8.dp))
+
             Spacer(modifier = Modifier.height(32.dp))
-            
-            // Progress indicator
+
+            // Progress indicator (kept, though not shown in HTML)
             TryOnProgressIndicator(uiState)
             
             Spacer(modifier = Modifier.height(32.dp))
@@ -141,42 +146,37 @@ fun ClothesChangePage(navController: NavController) {
                 Spacer(modifier = Modifier.height(16.dp))
             }
             
-            // Upload cards
-            Column(
-                verticalArrangement = Arrangement.spacedBy(20.dp)
-            ) {
-                // Person Image Card
-                ImageUploadCard(
-                    title = "Person Image",
-                    subtitle = "Your Photo",
-                    description = "Upload your current image for AI analysis",
-                    borderColor = Color(0xFF00D4FF),
-                    icon = R.drawable.ic_person,
+            // Upload rows styled like HTML glass cards
+            Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                GlassUploadRow(
+                    title = "Your Image",
+                    subtitle = "Upload a photo",
+                    iconRes = R.drawable.ic_person,
                     selectedImageUri = uiState.personImageUri,
                     onClick = personImagePicker,
+                    accent = cyan,
                     enabled = !uiState.isLoading
                 )
-                
-                // Clothing Image Card
-                ImageUploadCard(
-                    title = "Clothing Image",
-                    subtitle = "Target Clothing",
-                    description = "Choose your desired clothing style",
-                    borderColor = Color(0xFF8B5CF6),
-                    icon = R.drawable.ic_clothing,
+                GlassUploadRow(
+                    title = "Outfit Image",
+                    subtitle = "Upload inspiration",
+                    iconRes = R.drawable.ic_clothing,
                     selectedImageUri = uiState.clothingImageUri,
                     onClick = clothingImagePicker,
+                    accent = purple,
                     enabled = !uiState.isLoading
                 )
             }
-            
+
             Spacer(modifier = Modifier.height(32.dp))
-            
-            // Transform button
-            TransformButton(
+
+            // Generate button with neon gradient + glow
+            NeonGenerateButton(
+                text = "Generate",
                 enabled = uiState.canStartTryOn,
-                isLoading = uiState.isLoading,
+                loading = uiState.isLoading,
                 loadingMessage = uiState.loadingMessage,
+                gradient = Brush.horizontalGradient(listOf(cyan, purple)),
                 onClick = { viewModel.startTryOn() }
             )
             
@@ -418,6 +418,203 @@ fun FuturisticPageTitle() {
                     color = Color(0xFF00D4FF).copy(alpha = 0.8f),
                     letterSpacing = 1.5.sp,
                     textAlign = TextAlign.Center
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun HtmlLikeHeader(title: String, onBack: () -> Unit) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        // Back arrow
+        Card(
+            modifier = Modifier
+                .size(44.dp)
+                .clickable { onBack() },
+            shape = CircleShape,
+            colors = CardDefaults.cardColors(containerColor = Color.White.copy(alpha = 0.06f)),
+            border = BorderStroke(1.dp, Color.White.copy(alpha = 0.12f))
+        ) {
+            Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
+                Icon(
+                    imageVector = Icons.Default.ArrowBack,
+                    contentDescription = "Back",
+                    tint = Color.White,
+                    modifier = Modifier.size(22.dp)
+                )
+            }
+        }
+        Text(
+            text = title,
+            color = Color.White,
+            fontSize = 18.sp,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.weight(1f),
+            textAlign = TextAlign.Center
+        )
+        Spacer(modifier = Modifier.width(44.dp))
+    }
+}
+
+ 
+
+@Composable
+private fun GlassUploadRow(
+    title: String,
+    subtitle: String,
+    iconRes: Int,
+    selectedImageUri: android.net.Uri?,
+    onClick: () -> Unit,
+    accent: Color,
+    enabled: Boolean
+) {
+    val borderColor = if (enabled) Color.White.copy(alpha = 0.10f) else Color.White.copy(alpha = 0.05f)
+
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(if (selectedImageUri != null) 200.dp else 96.dp)
+            .clickable(enabled = enabled) { onClick() },
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White.copy(alpha = 0.05f)),
+        border = BorderStroke(1.dp, borderColor)
+    ) {
+        if (selectedImageUri != null) {
+            // Show selected image preview
+            Box(Modifier.fillMaxSize()) {
+                AsyncImage(
+                    model = selectedImageUri,
+                    contentDescription = title,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(12.dp)
+                        .clip(RoundedCornerShape(12.dp)),
+                    contentScale = ContentScale.Crop
+                )
+                // subtle overlay border
+                Box(
+                    modifier = Modifier
+                        .matchParentSize()
+                        .border(1.dp, Color.White.copy(alpha = 0.08f), RoundedCornerShape(16.dp))
+                )
+            }
+        } else {
+            Row(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 16.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Box(
+                        modifier = Modifier
+                            .size(56.dp)
+                            .clip(RoundedCornerShape(12.dp))
+                            .background(Color.White.copy(alpha = 0.08f)),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Image(
+                            painter = painterResource(id = iconRes),
+                            contentDescription = null,
+                            modifier = Modifier.size(28.dp),
+                            colorFilter = ColorFilter.tint(Color.White.copy(alpha = 0.8f))
+                        )
+                    }
+                    Spacer(modifier = Modifier.width(12.dp))
+                    Column {
+                        Text(
+                            text = title,
+                            color = Color.White,
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Text(
+                            text = subtitle,
+                            color = Color(0xFF9CA3AF),
+                            fontSize = 13.sp
+                        )
+                    }
+                }
+                // Trailing circular add button
+                Box(
+                    modifier = Modifier
+                        .size(40.dp)
+                        .clip(CircleShape)
+                        .border(2.dp, Color.White.copy(alpha = 0.2f), CircleShape),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        painter = painterResource(id = android.R.drawable.ic_input_add),
+                        contentDescription = "Add",
+                        tint = Color.White.copy(alpha = 0.8f),
+                        modifier = Modifier.size(22.dp)
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun NeonGenerateButton(
+    text: String,
+    enabled: Boolean,
+    loading: Boolean,
+    loadingMessage: String?,
+    gradient: Brush,
+    onClick: () -> Unit
+) {
+    val glowCyan = Color(0x8000F6FF)
+    val glowPurple = Color(0x804B0082)
+
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(56.dp)
+            .shadow(
+                elevation = if (enabled) 24.dp else 0.dp,
+                shape = RoundedCornerShape(16.dp),
+                ambientColor = if (enabled) glowPurple else Color.Transparent,
+                spotColor = if (enabled) glowCyan else Color.Transparent
+            )
+            .clickable(enabled = enabled && !loading) { onClick() },
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.Transparent),
+        border = BorderStroke(2.dp, Color.White.copy(alpha = 0.12f))
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(gradient)
+                .padding(horizontal = 16.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            if (loading) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(18.dp),
+                        color = Color.White,
+                        strokeWidth = 2.dp
+                    )
+                    Spacer(modifier = Modifier.width(12.dp))
+                    Text(
+                        text = loadingMessage ?: "Generating...",
+                        color = Color.White,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+            } else {
+                Text(
+                    text = text,
+                    color = Color.White,
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold
                 )
             }
         }
