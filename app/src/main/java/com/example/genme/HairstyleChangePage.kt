@@ -218,7 +218,7 @@ fun HairstyleChangePage(
                     }
                 }
 
-                // Gender Selection
+                // Gender Selection with Distinct Styling
                 Card(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(16.dp),
@@ -239,56 +239,90 @@ fun HairstyleChangePage(
                             .padding(8.dp),
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        // Men's Styles Button
+                        // Men's Styles Button - Blue Theme
                         Card(
                             modifier = Modifier
                                 .weight(1f)
-                                .clickable { selectedGender = "Men's Styles" },
+                                .clickable { 
+                                    selectedGender = "Men's Styles"
+                                    selectedHairstyle = menStyles.first()
+                                },
                             shape = RoundedCornerShape(12.dp),
                             colors = CardDefaults.cardColors(
                                 containerColor = if (selectedGender == "Men's Styles") 
-                                    Color(0x2600F6FF) else Color.White.copy(alpha = 0.05f)
+                                    Color(0x2600B8FF) else Color.White.copy(alpha = 0.05f)
                             ),
                             border = BorderStroke(
                                 1.dp,
                                 if (selectedGender == "Men's Styles") 
-                                    Color(0xFF00F6FF) else Color.White.copy(alpha = 0.1f)
+                                    Color(0xFF00B8FF) else Color.White.copy(alpha = 0.1f)
                             )
                         ) {
-                            Text(
-                                text = "Men's Styles",
-                                color = if (selectedGender == "Men's Styles") Color.White else Color.Gray,
-                                fontSize = 14.sp,
-                                fontWeight = if (selectedGender == "Men's Styles") FontWeight.Bold else FontWeight.Medium,
-                                modifier = Modifier.padding(12.dp),
-                                textAlign = TextAlign.Center
-                            )
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(12.dp),
+                                horizontalArrangement = Arrangement.Center,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Icon(
+                                    Icons.Default.Person,
+                                    contentDescription = "Men",
+                                    tint = if (selectedGender == "Men's Styles") Color(0xFF00B8FF) else Color.Gray,
+                                    modifier = Modifier.size(18.dp)
+                                )
+                                Spacer(modifier = Modifier.width(6.dp))
+                                Text(
+                                    text = "Men's Styles",
+                                    color = if (selectedGender == "Men's Styles") Color.White else Color.Gray,
+                                    fontSize = 14.sp,
+                                    fontWeight = if (selectedGender == "Men's Styles") FontWeight.Bold else FontWeight.Medium,
+                                    textAlign = TextAlign.Center
+                                )
+                            }
                         }
 
-                        // Women's Styles Button
+                        // Women's Styles Button - Pink/Purple Theme
                         Card(
                             modifier = Modifier
                                 .weight(1f)
-                                .clickable { selectedGender = "Women's Styles" },
+                                .clickable { 
+                                    selectedGender = "Women's Styles"
+                                    selectedHairstyle = womenStyles.first()
+                                },
                             shape = RoundedCornerShape(12.dp),
                             colors = CardDefaults.cardColors(
                                 containerColor = if (selectedGender == "Women's Styles") 
-                                    Color(0x2600F6FF) else Color.White.copy(alpha = 0.05f)
+                                    Color(0x268338EC) else Color.White.copy(alpha = 0.05f)
                             ),
                             border = BorderStroke(
                                 1.dp,
                                 if (selectedGender == "Women's Styles") 
-                                    Color(0xFF00F6FF) else Color.White.copy(alpha = 0.1f)
+                                    Color(0xFF8338EC) else Color.White.copy(alpha = 0.1f)
                             )
                         ) {
-                            Text(
-                                text = "Women's Styles",
-                                color = if (selectedGender == "Women's Styles") Color.White else Color.Gray,
-                                fontSize = 14.sp,
-                                fontWeight = if (selectedGender == "Women's Styles") FontWeight.Bold else FontWeight.Medium,
-                                modifier = Modifier.padding(12.dp),
-                                textAlign = TextAlign.Center
-                            )
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(12.dp),
+                                horizontalArrangement = Arrangement.Center,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Icon(
+                                    Icons.Default.Face,
+                                    contentDescription = "Women",
+                                    tint = if (selectedGender == "Women's Styles") Color(0xFF8338EC) else Color.Gray,
+                                    modifier = Modifier.size(18.dp)
+                                )
+                                Spacer(modifier = Modifier.width(6.dp))
+                                Text(
+                                    text = "Women's Styles",
+                                    color = if (selectedGender == "Women's Styles") Color.White else Color.Gray,
+                                    fontSize = 14.sp,
+                                    fontWeight = if (selectedGender == "Women's Styles") FontWeight.Bold else FontWeight.Medium,
+                                    textAlign = TextAlign.Center
+                                )
+                            }
                         }
                     }
                 }
@@ -321,67 +355,217 @@ fun HairstyleChangePage(
                         Spacer(modifier = Modifier.height(8.dp))
                         
                         Box {
-                            Card(
+                            // Gender-Specific Styled Dropdown Selector
+                            val genderColors = if (selectedGender == "Men's Styles") {
+                                // Men's Blue Theme
+                                listOf(
+                                    Color(0xFF00B8FF).copy(alpha = 0.12f),
+                                    Color(0xFF0066CC).copy(alpha = 0.15f),
+                                    Color(0xFF00B8FF).copy(alpha = 0.12f)
+                                )
+                            } else {
+                                // Women's Purple Theme  
+                                listOf(
+                                    Color(0xFF8338EC).copy(alpha = 0.12f),
+                                    Color(0xFFAD5CF9).copy(alpha = 0.15f),
+                                    Color(0xFF8338EC).copy(alpha = 0.12f)
+                                )
+                            }
+                            
+                            Box(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .clickable { dropdownExpanded = true },
-                                shape = RoundedCornerShape(12.dp),
-                                colors = CardDefaults.cardColors(
-                                    containerColor = Color.Transparent
-                                ),
-                                border = BorderStroke(
-                                    1.dp,
-                                    Color.White.copy(alpha = 0.1f)
-                                )
+                                    .clip(RoundedCornerShape(16.dp))
+                                    .background(
+                                        Brush.horizontalGradient(colors = genderColors)
+                                    )
+                                    .clickable { dropdownExpanded = true }
                             ) {
-                                Row(
+                                // Subtle gradient border effect
+                                Box(
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .padding(16.dp),
-                                    horizontalArrangement = Arrangement.SpaceBetween,
-                                    verticalAlignment = Alignment.CenterVertically
+                                        .clip(RoundedCornerShape(16.dp))
+                                        .background(
+                                            Color.Black.copy(alpha = 0.4f)
+                                        )
+                                        .padding(1.dp)
                                 ) {
-                                    Text(
-                                        text = selectedHairstyle,
-                                        color = Color.White,
-                                        fontSize = 16.sp,
-                                        fontWeight = FontWeight.Medium
-                                    )
-                                    
-                                    Icon(
-                                        Icons.Default.ExpandMore,
-                                        contentDescription = "Expand",
-                                        tint = Color.White.copy(alpha = 0.7f)
-                                    )
+                                    Box(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .clip(RoundedCornerShape(15.dp))
+                                            .background(
+                                                Brush.verticalGradient(
+                                                    colors = listOf(
+                                                        Color(0xFF1A1A2E).copy(alpha = 0.8f),
+                                                        Color(0xFF0D0D1A).copy(alpha = 0.9f)
+                                                    )
+                                                )
+                                            )
+                                    ) {
+                                        Row(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .padding(18.dp),
+                                            horizontalArrangement = Arrangement.SpaceBetween,
+                                            verticalAlignment = Alignment.CenterVertically
+                                        ) {
+                                            Column {
+                                                Text(
+                                                    text = selectedHairstyle,
+                                                    color = Color.White,
+                                                    fontSize = 16.sp,
+                                                    fontWeight = FontWeight.SemiBold
+                                                )
+                                                Text(
+                                                    text = "Tap to change style",
+                                                    color = Color.White.copy(alpha = 0.7f),
+                                                    fontSize = 12.sp,
+                                                    fontWeight = FontWeight.Normal
+                                                )
+                                            }
+                                            
+                                            Box(
+                                                modifier = Modifier
+                                                    .size(32.dp)
+                                                    .background(
+                                                        Brush.radialGradient(
+                                                            colors = if (selectedGender == "Men's Styles") {
+                                                                listOf(
+                                                                    Color(0xFF00B8FF).copy(alpha = 0.3f),
+                                                                    Color(0xFF0066CC).copy(alpha = 0.2f)
+                                                                )
+                                                            } else {
+                                                                listOf(
+                                                                    Color(0xFF8338EC).copy(alpha = 0.3f),
+                                                                    Color(0xFFAD5CF9).copy(alpha = 0.2f)
+                                                                )
+                                                            }
+                                                        ),
+                                                        CircleShape
+                                                    ),
+                                                contentAlignment = Alignment.Center
+                                            ) {
+                                                Icon(
+                                                    Icons.Default.ExpandMore,
+                                                    contentDescription = "Expand",
+                                                    tint = if (selectedGender == "Men's Styles") 
+                                                        Color(0xFF00B8FF) else Color(0xFF8338EC),
+                                                    modifier = Modifier.size(18.dp)
+                                                )
+                                            }
+                                        }
+                                    }
                                 }
                             }
                             
+                            // Enhanced Glassmorphic Dropdown Menu
                             DropdownMenu(
                                 expanded = dropdownExpanded,
                                 onDismissRequest = { dropdownExpanded = false },
                                 modifier = Modifier
-                                    .heightIn(max = 300.dp)
-                                    .width(280.dp)
-                                    .clip(RoundedCornerShape(12.dp))
+                                    .heightIn(max = 350.dp)
+                                    .width(320.dp)
+                                    .clip(RoundedCornerShape(20.dp))
                                     .background(
-                                        Color(0xE6282828),
-                                        RoundedCornerShape(12.dp)
+                                        Brush.verticalGradient(
+                                            colors = listOf(
+                                                Color(0xF0121218),
+                                                Color(0xF01A1A2E)
+                                            )
+                                        ),
+                                        RoundedCornerShape(20.dp)
                                     )
                                     .border(
                                         1.dp,
-                                        Color.White.copy(alpha = 0.1f),
-                                        RoundedCornerShape(12.dp)
+                                        Brush.verticalGradient(
+                                            colors = listOf(
+                                                Color(0xFF00B8FF).copy(alpha = 0.3f),
+                                                Color(0xFF8338EC).copy(alpha = 0.4f),
+                                                Color(0xFF00F5D4).copy(alpha = 0.3f)
+                                            )
+                                        ),
+                                        RoundedCornerShape(20.dp)
                                     )
                             ) {
+                                // Gender-Specific Header
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .background(
+                                            Brush.horizontalGradient(
+                                                colors = if (selectedGender == "Men's Styles") {
+                                                    listOf(
+                                                        Color(0xFF00B8FF).copy(alpha = 0.2f),
+                                                        Color(0xFF0066CC).copy(alpha = 0.25f),
+                                                        Color(0xFF00B8FF).copy(alpha = 0.2f)
+                                                    )
+                                                } else {
+                                                    listOf(
+                                                        Color(0xFF8338EC).copy(alpha = 0.2f),
+                                                        Color(0xFFAD5CF9).copy(alpha = 0.25f),
+                                                        Color(0xFF8338EC).copy(alpha = 0.2f)
+                                                    )
+                                                }
+                                            )
+                                        )
+                                        .padding(16.dp)
+                                ) {
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Icon(
+                                            if (selectedGender == "Men's Styles") Icons.Default.Person else Icons.Default.Face,
+                                            contentDescription = selectedGender,
+                                            tint = if (selectedGender == "Men's Styles") 
+                                                Color(0xFF00B8FF) else Color(0xFF8338EC),
+                                            modifier = Modifier.size(20.dp)
+                                        )
+                                        Spacer(modifier = Modifier.width(8.dp))
+                                        Text(
+                                            text = "${selectedGender} Collection",
+                                            color = Color.White,
+                                            fontSize = 14.sp,
+                                            fontWeight = FontWeight.Bold
+                                        )
+                                    }
+                                }
+                                
+                                // Hairstyle items
                                 hairstyles.forEach { style ->
                                     DropdownMenuItem(
                                         text = {
-                                            Text(
-                                                text = style,
-                                                color = if (style == selectedHairstyle) Color(0xFF00F6FF) else Color.White,
-                                                fontSize = 14.sp,
-                                                fontWeight = if (style == selectedHairstyle) FontWeight.Bold else FontWeight.Normal
-                                            )
+                                            Row(
+                                                modifier = Modifier.fillMaxWidth(),
+                                                horizontalArrangement = Arrangement.SpaceBetween,
+                                                verticalAlignment = Alignment.CenterVertically
+                                            ) {
+                                                Text(
+                                                    text = style,
+                                                    color = if (style == selectedHairstyle) {
+                                                        if (selectedGender == "Men's Styles") 
+                                                            Color(0xFF00B8FF) else Color(0xFF8338EC)
+                                                    } else {
+                                                        Color.White.copy(alpha = 0.9f)
+                                                    },
+                                                    fontSize = 15.sp,
+                                                    fontWeight = if (style == selectedHairstyle) 
+                                                        FontWeight.Bold 
+                                                    else 
+                                                        FontWeight.Medium
+                                                )
+                                                
+                                                if (style == selectedHairstyle) {
+                                                    Icon(
+                                                        Icons.Default.CheckCircle,
+                                                        contentDescription = "Selected",
+                                                        tint = if (selectedGender == "Men's Styles") 
+                                                            Color(0xFF00B8FF) else Color(0xFF8338EC),
+                                                        modifier = Modifier.size(18.dp)
+                                                    )
+                                                }
+                                            }
                                         },
                                         onClick = {
                                             selectedHairstyle = style
@@ -390,11 +574,31 @@ fun HairstyleChangePage(
                                         },
                                         modifier = Modifier
                                             .background(
-                                                if (style == selectedHairstyle) 
-                                                    Color(0x3300F6FF) 
-                                                else 
-                                                    Color.Transparent
+                                                if (style == selectedHairstyle) {
+                                                    if (selectedGender == "Men's Styles") {
+                                                        Brush.horizontalGradient(
+                                                            colors = listOf(
+                                                                Color(0xFF00B8FF).copy(alpha = 0.15f),
+                                                                Color(0xFF0066CC).copy(alpha = 0.2f),
+                                                                Color(0xFF00B8FF).copy(alpha = 0.15f)
+                                                            )
+                                                        )
+                                                    } else {
+                                                        Brush.horizontalGradient(
+                                                            colors = listOf(
+                                                                Color(0xFF8338EC).copy(alpha = 0.15f),
+                                                                Color(0xFFAD5CF9).copy(alpha = 0.2f),
+                                                                Color(0xFF8338EC).copy(alpha = 0.15f)
+                                                            )
+                                                        )
+                                                    }
+                                                } else {
+                                                    Brush.horizontalGradient(
+                                                        colors = listOf(Color.Transparent, Color.Transparent)
+                                                    )
+                                                }
                                             )
+                                            .padding(horizontal = 4.dp, vertical = 2.dp)
                                     )
                                 }
                             }
@@ -428,39 +632,49 @@ fun HairstyleChangePage(
                             pressedElevation = 4.dp
                         )
                     ) {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .background(
-                                    brush = Brush.horizontalGradient(
-                                        colors = listOf(
-                                            Color(0xFF00B8FF),  // App cyan
-                                            Color(0xFF8338EC),  // App purple
-                                            Color(0xFF00F5D4)   // App teal
-                                        )
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .background(
+                                        brush = if (selectedGender == "Men's Styles") {
+                                            Brush.horizontalGradient(
+                                                colors = listOf(
+                                                    Color(0xFF00B8FF),  // Men's Blue
+                                                    Color(0xFF0066CC),  // Darker Blue
+                                                    Color(0xFF004499)   // Deep Blue
+                                                )
+                                            )
+                                        } else {
+                                            Brush.horizontalGradient(
+                                                colors = listOf(
+                                                    Color(0xFF8338EC),  // Women's Purple
+                                                    Color(0xFFAD5CF9),  // Light Purple
+                                                    Color(0xFF6D28D9)   // Deep Purple
+                                                )
+                                            )
+                                        },
+                                        shape = RoundedCornerShape(16.dp)
                                     ),
-                                    shape = RoundedCornerShape(16.dp)
-                                ),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                contentAlignment = Alignment.Center
                             ) {
-                                Icon(
-                                    Icons.Default.AutoAwesome,
-                                    contentDescription = "Generate",
-                                    tint = Color.White,
-                                    modifier = Modifier.size(24.dp)
-                                )
-                                Text(
-                                    text = "Generate Hairstyle",
-                                    color = Color.White,
-                                    fontSize = 16.sp,
-                                    fontWeight = FontWeight.Bold
-                                )
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                ) {
+                                    Icon(
+                                        Icons.Default.AutoAwesome,
+                                        contentDescription = "Generate",
+                                        tint = Color.White,
+                                        modifier = Modifier.size(24.dp)
+                                    )
+                                    Text(
+                                        text = "Generate ${if (selectedGender == "Men's Styles") "Men's" else "Women's"} Style",
+                                        color = Color.White,
+                                        fontSize = 16.sp,
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                }
                             }
-                        }
                     }
                 }
                 
