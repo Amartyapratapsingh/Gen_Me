@@ -3,6 +3,7 @@ package com.example.genme.ui
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -22,9 +23,186 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.genme.R
+
+@Composable
+fun StitchBottomNav(
+    navController: NavController,
+    currentRoute: String?
+) {
+    // Working colors from hairstyle changer page
+    val unselected = Color.Gray // Exact same as working hairstyle nav
+    val selected = Color.White
+    
+    // Working background from hairstyle changer page  
+    val glassBg = Color.Black.copy(alpha = 0.3f) // This exact line works perfectly in hairstyle page
+
+    Column(modifier = Modifier.fillMaxWidth()) {
+        // HTML equivalent: border-t border-white/10
+        Divider(color = Color.White.copy(alpha = 0.1f), thickness = 1.dp)
+        
+        // EXACT working implementation from hairstyle page middle navigation
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(80.dp),
+            shape = RoundedCornerShape(topStart = 0.dp, topEnd = 0.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = Color.Black.copy(alpha = 0.3f)
+            ),
+            elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 16.dp),
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+            // Home
+            StitchNavItem(
+                icon = Icons.Default.Home,
+                label = "Home",
+                selected = currentRoute == "landing_page",
+                selectedColor = selected,
+                unselectedColor = unselected,
+                onClick = { navController.navigate("landing_page") }
+            )
+
+            // Styles
+            StitchNavItem(
+                icon = ImageVector.vectorResource(id = R.drawable.ic_clothing),
+                label = "Styles",
+                selected = currentRoute == "clothes_change",
+                selectedColor = selected,
+                unselectedColor = unselected,
+                onClick = { navController.navigate("clothes_change") }
+            )
+
+            // Generate (center highlighted) - HTML: bg-gradient-to-tr from-cyan-400 to-purple-600
+            StitchCenterGenerateItem(
+                selected = currentRoute == "ghibli_art",
+                gradient = Brush.radialGradient(
+                    colors = listOf(Color(0xFF22D3EE), Color(0xFF9333EA)), // cyan-400 to purple-600
+                    radius = 100f
+                ),
+                onClick = { navController.navigate("ghibli_art") }
+            )
+
+            // Profile
+            StitchNavItem(
+                icon = Icons.Default.Person,
+                label = "Profile",
+                selected = currentRoute == "profile",
+                selectedColor = selected,
+                unselectedColor = unselected,
+                onClick = { navController.navigate("profile") }
+            )
+
+            // Settings
+            StitchNavItem(
+                icon = Icons.Default.Settings,
+                label = "Settings",
+                selected = currentRoute == "settings",
+                selectedColor = selected,
+                unselectedColor = unselected,
+                onClick = { navController.navigate("settings") }
+            )
+            }
+        }
+        
+        // Bottom safe area with matching glassmorphism effect (HTML: h-5 bg-black/30)
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(20.dp)
+                .background(Color.Black.copy(alpha = 0.3f))
+        )
+    }
+}
+
+@Composable
+private fun StitchNavItem(
+    icon: ImageVector,
+    label: String,
+    selected: Boolean,
+    selectedColor: Color,
+    unselectedColor: Color,
+    onClick: () -> Unit
+) {
+    val tint = if (selected) selectedColor else unselectedColor
+    
+    // EXACT structure from working hairstyle page navigation
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.clickable { onClick() }
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = label,
+            tint = tint,
+            modifier = Modifier.size(24.dp)
+        )
+        Text(
+            text = label,
+            color = tint,
+            fontSize = 12.sp,
+            fontWeight = FontWeight.Medium
+        )
+    }
+}
+
+@Composable
+private fun StitchCenterGenerateItem(
+    selected: Boolean,
+    gradient: Brush,
+    onClick: () -> Unit
+) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
+        modifier = Modifier.offset(y = (-24).dp)
+    ) {
+        // HTML exact: p-3 rounded-full shadow-[0_0_15px_rgba(0,246,255,0.5)]
+        Card(
+            onClick = onClick,
+            shape = RoundedCornerShape(100),
+            colors = CardDefaults.cardColors(containerColor = Color.Transparent),
+            elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
+            modifier = Modifier.shadow(
+                elevation = 15.dp,
+                shape = RoundedCornerShape(100),
+                ambientColor = Color(0x8000F6FF), // Exact HTML rgba(0,246,255,0.5)
+                spotColor = Color(0x8000F6FF)     // Same cyan glow for consistency
+            )
+        ) {
+            Box(
+                modifier = Modifier
+                    .background(gradient, shape = RoundedCornerShape(100))
+                    .padding(12.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = Icons.Default.AutoAwesome,
+                    contentDescription = "Generate",
+                    tint = Color.White,
+                    modifier = Modifier.size(28.dp)
+                )
+            }
+        }
+        Spacer(modifier = Modifier.height(4.dp))
+        Text(
+            text = "Generate",
+            color = Color.White,
+            fontSize = 12.sp, // Same as working hairstyle nav
+            fontWeight = FontWeight.Medium // Same as working hairstyle nav
+        )
+    }
+}
 
 @Composable
 fun FuturisticBottomNav(navController: NavController, currentRoute: String? = "landing_page") {
@@ -185,17 +363,52 @@ fun NeonGlassBottomNav(
     navController: NavController,
     currentRoute: String?
 ) {
-    val inactive = Color.White.copy(alpha = 0.6f)
+    // Match the app's signature color scheme
+    val inactive = Color.White.copy(alpha = 0.7f)
     val active = Color.White
-    val cyan = Color(0xFF22D3EE)
-    val purple = Color(0xFF7C3AED)
+    val appCyan = Color(0xFF00B8FF)    // Main app cyan
+    val appPurple = Color(0xFF8338EC)  // Main app purple
+    val appTeal = Color(0xFF00F5D4)    // Main app teal
 
     Column(modifier = Modifier.fillMaxWidth()) {
-        Divider(color = Color.White.copy(alpha = 0.1f), thickness = 1.dp)
+        // Subtle gradient border matching app theme
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(1.dp)
+                .background(
+                    Brush.horizontalGradient(
+                        colors = listOf(
+                            appCyan.copy(alpha = 0.3f),
+                            appPurple.copy(alpha = 0.4f),
+                            appTeal.copy(alpha = 0.3f)
+                        )
+                    )
+                )
+        )
+        
+        // Glassmorphism navbar with app's signature gradient
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(Color.Black.copy(alpha = 0.3f))
+                .background(
+                    Brush.horizontalGradient(
+                        colors = listOf(
+                            Color(0xFF0D0D1A).copy(alpha = 0.85f), // Match app background
+                            Color(0xFF1A1A2E).copy(alpha = 0.90f), // Slight variation
+                            Color(0xFF0D0D1A).copy(alpha = 0.85f)
+                        )
+                    )
+                )
+                .background(
+                    Brush.horizontalGradient(
+                        colors = listOf(
+                            appCyan.copy(alpha = 0.08f),
+                            appPurple.copy(alpha = 0.12f),
+                            appTeal.copy(alpha = 0.08f)
+                        )
+                    )
+                )
                 .padding(horizontal = 16.dp, vertical = 8.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
@@ -223,8 +436,8 @@ fun NeonGlassBottomNav(
             // Generate (center highlighted)
             NeonCenterGenerateItem(
                 selected = currentRoute == "hairstyle_change" || currentRoute == "ghibli_art",
-                gradient = Brush.linearGradient(listOf(cyan, purple)),
-                onClick = { /* Keep on current generation page */ }
+                gradient = Brush.linearGradient(listOf(appCyan, appPurple, appTeal)),
+                onClick = { navController.navigate("ghibli_art") }
             )
 
             // Profile
@@ -247,12 +460,30 @@ fun NeonGlassBottomNav(
                 onClick = { navController.navigate("settings") }
             )
         }
-        // Bottom safe area tint
+        
+        // Bottom safe area with matching glassmorphism gradient
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(20.dp)
-                .background(Color.Black.copy(alpha = 0.3f))
+                .background(
+                    Brush.horizontalGradient(
+                        colors = listOf(
+                            Color(0xFF0D0D1A).copy(alpha = 0.85f),
+                            Color(0xFF1A1A2E).copy(alpha = 0.90f),
+                            Color(0xFF0D0D1A).copy(alpha = 0.85f)
+                        )
+                    )
+                )
+                .background(
+                    Brush.horizontalGradient(
+                        colors = listOf(
+                            appCyan.copy(alpha = 0.05f),
+                            appPurple.copy(alpha = 0.08f),
+                            appTeal.copy(alpha = 0.05f)
+                        )
+                    )
+                )
         )
     }
 }
@@ -282,28 +513,33 @@ private fun NeonCenterGenerateItem(
     gradient: Brush,
     onClick: () -> Unit
 ) {
+    // App signature colors for glow effects
+    val appCyan = Color(0xFF00B8FF)
+    val appPurple = Color(0xFF8338EC)
+    
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
         modifier = Modifier.offset(y = (-12).dp)
     ) {
-        // Glowing circular button
+        // Glowing circular button with app-themed glow
         Card(
             onClick = onClick,
             shape = RoundedCornerShape(100),
             colors = CardDefaults.cardColors(containerColor = Color.Transparent),
-            elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+            elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
+            modifier = Modifier.shadow(
+                elevation = 16.dp,
+                shape = RoundedCornerShape(100),
+                ambientColor = appCyan.copy(alpha = 0.6f),  // Cyan glow
+                spotColor = appPurple.copy(alpha = 0.5f)    // Purple glow
+            )
         ) {
             Box(
                 modifier = Modifier
                     .background(gradient, shape = RoundedCornerShape(100))
-                    .shadow(
-                        elevation = 16.dp,
-                        shape = RoundedCornerShape(100),
-                        ambientColor = Color(0x8800F6FF),
-                        spotColor = Color(0x887D32FF)
-                    )
-                    .padding(12.dp)
+                    .padding(12.dp),
+                contentAlignment = Alignment.Center
             ) {
                 Icon(
                     imageVector = Icons.Default.AutoAwesome,
@@ -316,7 +552,7 @@ private fun NeonCenterGenerateItem(
         Spacer(modifier = Modifier.height(2.dp))
         Text(
             text = "Generate",
-            color = if (selected) Color.White else Color.White,
+            color = Color.White,
             style = MaterialTheme.typography.labelSmall
         )
     }

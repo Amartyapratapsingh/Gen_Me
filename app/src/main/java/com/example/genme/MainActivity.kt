@@ -6,13 +6,18 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.core.view.WindowCompat
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.Modifier
+import androidx.compose.runtime.getValue
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.genme.ui.GalleryScreen
 import com.example.genme.ui.theme.GenMeTheme
 import com.example.genme.viewmodel.TryOnViewModel
@@ -23,6 +28,7 @@ import androidx.navigation.navArgument
 import com.example.genme.ui.FullScreenImageViewer
 import com.example.genme.ui.SettingsPage
 import com.example.genme.ui.ProfilePage
+import com.example.genme.ui.NeonGlassBottomNav
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -45,36 +51,39 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     val navController = rememberNavController()
-                    NavHost(navController = navController, startDestination = "landing_page") {
-                        composable("landing_page") {
-                            LandingPage(navController = navController)
-                        }
-                        composable("clothes_change") {
-                            ClothesChangePage(navController = navController)
-                        }
-                        composable("hairstyle_change") {
-                            HairstyleChangePage(navController = navController)
-                        }
-                        composable("ghibli_art") {
-                            GhibliArtPage(navController = navController)
-                        }
-                        composable("gallery") {
-                            GalleryScreen(viewModel = viewModel, navController = navController)
-                        }
-                        composable("settings") {
-                            SettingsPage(navController = navController, viewModel = viewModel)
-                        }
-                        composable("profile") {
-                            ProfilePage(navController = navController, viewModel = viewModel)
-                        }
-                        composable(
-                            "full_screen_image/{imagePath}",
-                            arguments = listOf(navArgument("imagePath") { type = NavType.StringType })
-                        ) { backStackEntry ->
-                            FullScreenImageViewer(
+                    val navBackStackEntry by navController.currentBackStackEntryAsState()
+                    val currentRoute = navBackStackEntry?.destination?.route
+
+                    Scaffold(
+                        bottomBar = {
+                            // Use the working dark navigation implementation
+                            NeonGlassBottomNav(
                                 navController = navController,
-                                imagePath = backStackEntry.arguments?.getString("imagePath") ?: ""
+                                currentRoute = currentRoute
                             )
+                        }
+                    ) { innerPadding ->
+                        NavHost(
+                            navController = navController,
+                            startDestination = "landing_page",
+                            modifier = Modifier.fillMaxSize().padding(innerPadding)
+                        ) {
+                            composable("landing_page") { LandingPage(navController = navController) }
+                            composable("clothes_change") { ClothesChangePage(navController = navController) }
+                            composable("hairstyle_change") { HairstyleChangePage(navController = navController) }
+                            composable("ghibli_art") { GhibliArtPage(navController = navController) }
+                            composable("gallery") { GalleryScreen(viewModel = viewModel, navController = navController) }
+                            composable("settings") { SettingsPage(navController = navController, viewModel = viewModel) }
+                            composable("profile") { ProfilePage(navController = navController, viewModel = viewModel) }
+                            composable(
+                                "full_screen_image/{imagePath}",
+                                arguments = listOf(navArgument("imagePath") { type = NavType.StringType })
+                            ) { backStackEntry ->
+                                FullScreenImageViewer(
+                                    navController = navController,
+                                    imagePath = backStackEntry.arguments?.getString("imagePath") ?: ""
+                                )
+                            }
                         }
                     }
                 }

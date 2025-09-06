@@ -175,14 +175,7 @@ fun ProfilePage(
             )
 
             Spacer(modifier = Modifier.weight(1f))
-
-            // Bottom Navigation
-            HtmlStyleBottomNav(
-                primaryColor = primaryColor,
-                textSecondary = textSecondary,
-                navController = navController,
-                currentRoute = "profile"
-            )
+            // Bottom nav provided by MainActivity Scaffold
         }
     }
 }

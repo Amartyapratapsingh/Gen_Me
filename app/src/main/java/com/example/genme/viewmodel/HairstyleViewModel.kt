@@ -258,3 +258,5 @@ data class HairstyleUiState(
     val canStartHairstyleChange: Boolean
         get() = hasAllInputs && !isLoading && isApiHealthy
 }
+
+

@@ -121,14 +121,7 @@ fun GalleryScreen(
             }
         }
 
-        // Footer nav
-        GalleryFooterNav(
-            onHome = { navController.navigate("landing_page") },
-            onStyles = { navController.navigate("clothes_change") },
-            onGenerate = { navController.navigate("ghibli_art") },
-            onCreations = { /* already here */ },
-            onSettings = { navController.navigate("settings") }
-        )
+        // Bottom nav provided by MainActivity Scaffold
     }
 }
 

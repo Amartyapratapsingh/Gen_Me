@@ -195,16 +195,8 @@ fun ClothesChangePage(navController: NavController) {
                 )
             }
             
-            Spacer(modifier = Modifier.height(100.dp)) // Space for bottom nav
             }
-            
-            // Bottom navigation
-            HtmlStyleBottomNav(
-                primaryColor = primaryColor,
-                textSecondary = textSecondary,
-                navController = navController,
-                currentRoute = "clothes_change"
-            )
+            // Bottom nav provided by MainActivity Scaffold
         }
         }
     }
@@ -431,4 +423,3 @@ fun FuturisticPageTitle() {
         }
     }
 }
-

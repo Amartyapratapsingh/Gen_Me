@@ -119,13 +119,7 @@ fun LandingPage(navController: NavController) {
                 )
                 Spacer(Modifier.height(12.dp))
             }
-            FooterNav(
-                onHome = { /* already here */ },
-                onStyles = { navController.navigate("clothes_change") },
-                onGenerate = { navController.navigate("ghibli_art") },
-                onProfile = { navController.navigate("profile") }
-            )
-            Spacer(Modifier.height(20.dp))
+            // Bottom nav provided by MainActivity Scaffold
         }
     }
 }

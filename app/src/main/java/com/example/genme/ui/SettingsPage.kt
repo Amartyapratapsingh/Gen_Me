@@ -191,13 +191,7 @@ fun SettingsPage(
                 Spacer(modifier = Modifier.height(16.dp))
             }
 
-            // Bottom Navigation
-            HtmlStyleBottomNav(
-                primaryColor = primaryColor,
-                textSecondary = textSecondary,
-                navController = navController,
-                currentRoute = "settings"
-            )
+            // Bottom nav provided by MainActivity Scaffold
         }
     }
 }

@@ -111,14 +111,7 @@ fun GhibliArtPage(navController: NavController) {
                         textAlign = TextAlign.Center
                     )
                 }
-                
-                // Bottom navigation
-                HtmlStyleBottomNav(
-                    primaryColor = primaryColor,
-                    textSecondary = textSecondary,
-                    navController = navController,
-                    currentRoute = "ghibli_art"
-                )
+                // Bottom nav provided by MainActivity Scaffold
             }
         }
     }
