@@ -13,6 +13,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
+import androidx.compose.ui.graphics.asImageBitmap
+import android.graphics.Bitmap
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -678,8 +680,337 @@ fun HairstyleChangePage(
                     }
                 }
                 
+                // Loading State Display
+                if (uiState.isLoading) {
+                    LoadingSection(
+                        message = uiState.loadingMessage ?: "Processing...",
+                        selectedGender = selectedGender
+                    )
+                }
+                
+                // Error Message Display
+                uiState.errorMessage?.let { error ->
+                    ErrorSection(
+                        message = error,
+                        selectedGender = selectedGender,
+                        onRetry = { viewModel.startHairstyleChange() },
+                        onDismiss = { viewModel.clearError() }
+                    )
+                }
+                
+                // Result Image Display
+                uiState.resultImage?.let { resultBitmap ->
+                    ResultSection(
+                        resultBitmap = resultBitmap,
+                        selectedGender = selectedGender,
+                        onSave = { viewModel.saveResultToGallery() },
+                        onReset = { viewModel.reset() },
+                        isSaving = uiState.isSaving
+                    )
+                }
+                
+                // Success Message Display
+                uiState.saveSuccessMessage?.let { message ->
+                    SuccessMessageSection(
+                        message = message,
+                        onDismiss = { viewModel.clearSaveMessage() }
+                    )
+                }
+                
                 // Space for main bottom navigation
                 Spacer(modifier = Modifier.height(100.dp))
+            }
+        }
+    }
+}
+
+@Composable
+private fun LoadingSection(
+    message: String,
+    selectedGender: String
+) {
+    val genderColor = if (selectedGender == "Men's Styles") Color(0xFF00B8FF) else Color(0xFF8338EC)
+    
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp),
+        shape = RoundedCornerShape(20.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = Color.White.copy(alpha = 0.05f)
+        ),
+        border = BorderStroke(
+            1.dp,
+            genderColor.copy(alpha = 0.3f)
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(24.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            CircularProgressIndicator(
+                color = genderColor,
+                strokeWidth = 3.dp,
+                modifier = Modifier.size(48.dp)
+            )
+            
+            Text(
+                text = "Generating Your Style",
+                color = Color.White,
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Bold
+            )
+            
+            Text(
+                text = message,
+                color = Color.White.copy(alpha = 0.8f),
+                fontSize = 14.sp,
+                textAlign = TextAlign.Center
+            )
+        }
+    }
+}
+
+@Composable
+private fun ErrorSection(
+    message: String,
+    selectedGender: String,
+    onRetry: () -> Unit,
+    onDismiss: () -> Unit
+) {
+    val genderColor = if (selectedGender == "Men's Styles") Color(0xFF00B8FF) else Color(0xFF8338EC)
+    
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp),
+        shape = RoundedCornerShape(20.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = Color(0x26FF4444)
+        ),
+        border = BorderStroke(
+            1.dp,
+            Color(0xFFFF4444).copy(alpha = 0.3f)
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(20.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            Icon(
+                Icons.Default.Error,
+                contentDescription = "Error",
+                tint = Color(0xFFFF4444),
+                modifier = Modifier.size(32.dp)
+            )
+            
+            Text(
+                text = "Generation Failed",
+                color = Color.White,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Bold
+            )
+            
+            Text(
+                text = message,
+                color = Color.White.copy(alpha = 0.9f),
+                fontSize = 14.sp,
+                textAlign = TextAlign.Center
+            )
+            
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                OutlinedButton(
+                    onClick = onDismiss,
+                    colors = ButtonDefaults.outlinedButtonColors(
+                        contentColor = Color.White
+                    ),
+                    border = BorderStroke(1.dp, Color.White.copy(alpha = 0.3f))
+                ) {
+                    Text("Dismiss")
+                }
+                
+                Button(
+                    onClick = onRetry,
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = genderColor
+                    )
+                ) {
+                    Text("Retry", color = Color.White)
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun ResultSection(
+    resultBitmap: Bitmap,
+    selectedGender: String,
+    onSave: () -> Unit,
+    onReset: () -> Unit,
+    isSaving: Boolean
+) {
+    val genderColor = if (selectedGender == "Men's Styles") Color(0xFF00B8FF) else Color(0xFF8338EC)
+    
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp),
+        shape = RoundedCornerShape(20.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = Color.White.copy(alpha = 0.05f)
+        ),
+        border = BorderStroke(
+            1.dp,
+            genderColor.copy(alpha = 0.3f)
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(20.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            Text(
+                text = "✨ Your New Style!",
+                color = Color.White,
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Bold
+            )
+            
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .aspectRatio(1f),
+                shape = RoundedCornerShape(16.dp),
+                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+            ) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    androidx.compose.foundation.Image(
+                        bitmap = resultBitmap.asImageBitmap(),
+                        contentDescription = "Generated Hairstyle",
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.Crop
+                    )
+                }
+            }
+            
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                OutlinedButton(
+                    onClick = onReset,
+                    modifier = Modifier.weight(1f),
+                    colors = ButtonDefaults.outlinedButtonColors(
+                        contentColor = Color.White
+                    ),
+                    border = BorderStroke(1.dp, Color.White.copy(alpha = 0.3f))
+                ) {
+                    Icon(
+                        Icons.Default.Refresh,
+                        contentDescription = "Try Again",
+                        modifier = Modifier.size(18.dp)
+                    )
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Text("Try Again")
+                }
+                
+                Button(
+                    onClick = onSave,
+                    modifier = Modifier.weight(1f),
+                    enabled = !isSaving,
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = genderColor
+                    )
+                ) {
+                    if (isSaving) {
+                        CircularProgressIndicator(
+                            color = Color.White,
+                            strokeWidth = 2.dp,
+                            modifier = Modifier.size(16.dp)
+                        )
+                    } else {
+                        Icon(
+                            Icons.Default.Download,
+                            contentDescription = "Save",
+                            modifier = Modifier.size(18.dp)
+                        )
+                    }
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Text(if (isSaving) "Saving..." else "Save", color = Color.White)
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun SuccessMessageSection(
+    message: String,
+    onDismiss: () -> Unit
+) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp),
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = Color(0x2600FF88)
+        ),
+        border = BorderStroke(
+            1.dp,
+            Color(0xFF00FF88).copy(alpha = 0.3f)
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    Icons.Default.CheckCircle,
+                    contentDescription = "Success",
+                    tint = Color(0xFF00FF88),
+                    modifier = Modifier.size(24.dp)
+                )
+                Spacer(modifier = Modifier.width(12.dp))
+                Text(
+                    text = message,
+                    color = Color.White,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Medium
+                )
+            }
+            
+            IconButton(onClick = onDismiss) {
+                Icon(
+                    Icons.Default.Close,
+                    contentDescription = "Dismiss",
+                    tint = Color.White.copy(alpha = 0.7f),
+                    modifier = Modifier.size(20.dp)
+                )
             }
         }
     }
