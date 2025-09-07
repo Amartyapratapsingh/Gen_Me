@@ -99,6 +99,7 @@ fun LandingPage(navController: NavController) {
                     onOutfits = { navController.navigate("clothes_change") },
                     onHairstyle = { navController.navigate("hairstyle_change") },
                     onBeardMaker = { navController.navigate("beard_maker") },
+                    onAgeChanger = { navController.navigate("age_changer") },
                     borderBrush = borderBrush
                 )
                 Text(
@@ -114,7 +115,7 @@ fun LandingPage(navController: NavController) {
                     onHair = { navController.navigate("hairstyle_change") },
                     onBackground = { /* disabled: no navigation */ },
                     onAvatar = { navController.navigate("beard_maker") },
-                    onFilters = { /* disabled: no navigation */ },
+                    onFilters = { navController.navigate("age_changer") },
                     onFaceGen = { /* disabled: no navigation */ }
                 )
                 Spacer(Modifier.height(12.dp))
@@ -177,6 +178,7 @@ private fun FeatureCarousel(
     onOutfits: () -> Unit,
     onHairstyle: () -> Unit,
     onBeardMaker: () -> Unit,
+    onAgeChanger: () -> Unit,
     borderBrush: Brush
 ) {
     val cardShape = RoundedCornerShape(16.dp)
@@ -205,6 +207,13 @@ private fun FeatureCarousel(
             imageUrl = "https://images.unsplash.com/photo-1542909168-82c3e7fdca5c?w=500&h=600&fit=crop&crop=face",
             label = "Beard Maker",
             onClick = onBeardMaker,
+            shape = cardShape,
+            borderBrush = borderBrush
+        )
+        FeatureCard(
+            imageUrl = "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=500&h=600&fit=crop&crop=face",
+            label = "Age Changer",
+            onClick = onAgeChanger,
             shape = cardShape,
             borderBrush = borderBrush
         )
@@ -257,7 +266,7 @@ private fun ToolsGrid(
         ToolItem("Hairstyle Changer", "https://lh3.googleusercontent.com/aida-public/AB6AXuBaThVtERU-QuL7WFIzM1qGp7bbh63c4aYpAlBewkTntAwe8M-O5Qi8DTkvk5B_K_KifruWkeGxUzLck2W6U5IzQq-Jfl7mEiAhJkVUHHP0A8MHLqU8HCh6YW02c9L6yLh3Juyhm7o0J_WV6sSKIFTt72LhXh6-R7xSnqIte4cl6IRwf7ESU_-6l8RJXMbjZeOrLELInWgBpAJEeaOTO2N1DDloamypwnXENfC6ZMyEEjyQ4_IDfI1RzymGuB7lC-xkEpzCkGPyywQ", onHair),
         ToolItem("Background Changer", "https://lh3.googleusercontent.com/aida-public/AB6AXuBPjm2PnlRLSMgFsUUMJhmEn7KIPjJNulqvxf5ZA0_qaeNBJlU7Xons8vg7jNpH7pWUaHt5L841wDoQkbZsyhsNY3Hnz2JHxs14MmesDZwjRKmg6i3CW96q9cc89P48O3t4_5UUgruVWewZrfu8DaRHDI627kYJLed9QSxtxEail2sGwcPd10Be_2bp3wbU_VNjFTdyRVihB7j6YIUs3bF55y2C1m97ULfSvHfVCB2RZtGhPlfiPmbI8Kzf260ADEuANC4Q9a4O4no", onBackground),
         ToolItem("Beard Maker", "https://images.unsplash.com/photo-1542909168-82c3e7fdca5c?w=100&h=100&fit=crop&crop=face", onAvatar),
-        ToolItem("Filters & Effects", "https://lh3.googleusercontent.com/aida-public/AB6AXuCex02vfyPcb2KWlS_DRDarjZMGpivKgrSX0_UxRY_2OkOztrFXzAnlu3GS8u6Q0QJbQzSS5qXg6Ud29-xCClW3S_hSZh3B83fChQAtiUg-QXSCtLclRhEYS9PCFD0U4bbdyPpJfIpSx3-y6Uyts0tJ_hMrk8EGgjTla5aLzhVVThKw0ur3FK6d1alOFvk6dpXbKYdEVGGSFWPio5UHh99nQRIARh1WFK-9GYyXnvcLRbGfXa1sxyHfk3ranusOA65zItpEChZW0n8", onFilters),
+        ToolItem("Age Changer", "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop&crop=face", onFilters),
         ToolItem("Face Generator", "https://lh3.googleusercontent.com/aida-public/AB6AXuCtjuaG_csFUAI4u4HEZhOSAv1ks69jxaxSO_IpPh9hhJ2k8CablgNv6_OjEkjr9HNKZ2tbYoyA2rdSmg0xA9P_-PUcq9JmMYNZ2fqZ8Qe0Vp3vUXG1a0UzZC8LsrxqdcecZsAiphg9yZiftWuJzDSRLAdPpIaiV9IVTEckY-cl208SZb_2y08-jN_gjMHXptFaLk0rxevDFkjrpYDJ6nBg0f3MXgeiuKYriSjescJPh3F6wrovkfA3p9E4mleLXqqVhcgEmFIvkSc", onFaceGen)
     )
 

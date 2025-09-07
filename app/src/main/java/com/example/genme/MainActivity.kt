@@ -36,6 +36,7 @@ import com.example.genme.ui.CoinPurchasePage
 import com.example.genme.ui.GenerateOptionsPopup
 import com.example.genme.ui.SplashScreen
 import com.example.genme.ui.BeardMakerPage
+import com.example.genme.ui.AgeChangerPage
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -87,6 +88,7 @@ class MainActivity : ComponentActivity() {
                                 composable("hairstyle_change") { HairstyleChangePage(navController = navController) }
                                 composable("ghibli_art") { GhibliArtPage(navController = navController) }
                                 composable("beard_maker") { BeardMakerPage(navController = navController) }
+                                composable("age_changer") { AgeChangerPage(navController = navController) }
                                 composable("coins") { CoinPurchasePage(navController = navController) }
                                 composable("gallery") { GalleryScreen(viewModel = viewModel, navController = navController) }
                                 composable("settings") { SettingsPage(navController = navController, viewModel = viewModel) }
@@ -109,7 +111,8 @@ class MainActivity : ComponentActivity() {
                                 onDismiss = { showGeneratePopup = false },
                                 onGenerateOutfit = { navController.navigate("clothes_change") },
                                 onGenerateHairstyle = { navController.navigate("hairstyle_change") },
-                                onBeardMaker = { navController.navigate("beard_maker") }
+                                onBeardMaker = { navController.navigate("beard_maker") },
+                                onAgeChanger = { navController.navigate("age_changer") }
                             )
                         }
                     }

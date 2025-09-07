@@ -18,6 +18,7 @@ import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.Image
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -569,7 +570,8 @@ fun GenerateOptionsPopup(
     onDismiss: () -> Unit,
     onGenerateOutfit: () -> Unit,
     onGenerateHairstyle: () -> Unit,
-    onBeardMaker: () -> Unit
+    onBeardMaker: () -> Unit,
+    onAgeChanger: () -> Unit
 ) {
     // Backdrop
     Box(
@@ -657,6 +659,19 @@ fun GenerateOptionsPopup(
                     subtitle = "Try different beard styles",
                     onClick = {
                         onBeardMaker()
+                        onDismiss()
+                    }
+                )
+                
+                Spacer(modifier = Modifier.height(6.dp))
+                
+                // Age Changer Option
+                GenerateOptionItem(
+                    icon = Icons.Default.Schedule,
+                    title = "Age Changer",
+                    subtitle = "Change age in photos",
+                    onClick = {
+                        onAgeChanger()
                         onDismiss()
                     }
                 )
