@@ -28,7 +28,11 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.foundation.Image
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -628,7 +632,7 @@ fun GenerateOptionsPopup(
                 
                 // Generate Outfit Option
                 GenerateOptionItem(
-                    icon = ImageVector.vectorResource(id = R.drawable.ic_clothing),
+                    imageRes = R.drawable.cloth_changer_banner,
                     title = "Generate Outfit",
                     subtitle = "Create a new outfit",
                     onClick = {
@@ -641,7 +645,7 @@ fun GenerateOptionsPopup(
                 
                 // Generate Hairstyle Option
                 GenerateOptionItem(
-                    icon = Icons.Default.AutoAwesome,
+                    imageRes = R.drawable.hairstyle_changer_banner,
                     title = "Generate Hairstyle", 
                     subtitle = "Try new hairstyles",
                     onClick = {
@@ -654,7 +658,7 @@ fun GenerateOptionsPopup(
                 
                 // Beard Maker Option
                 GenerateOptionItem(
-                    icon = Icons.Default.Person,
+                    imageRes = R.drawable.beard_maker_banner,
                     title = "Beard Maker",
                     subtitle = "Try different beard styles",
                     onClick = {
@@ -667,7 +671,7 @@ fun GenerateOptionsPopup(
                 
                 // Age Changer Option
                 GenerateOptionItem(
-                    icon = Icons.Default.Schedule,
+                    imageRes = R.drawable.age_changer_banner,
                     title = "Age Changer",
                     subtitle = "Change age in photos",
                     onClick = {
@@ -701,7 +705,8 @@ fun GenerateOptionsPopup(
 
 @Composable
 private fun GenerateOptionItem(
-    icon: ImageVector,
+    icon: ImageVector? = null,
+    imageRes: Int? = null,
     title: String,
     subtitle: String,
     onClick: () -> Unit
@@ -721,7 +726,7 @@ private fun GenerateOptionItem(
                 .padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Icon with background
+            // Icon/Image with background
             Box(
                 modifier = Modifier
                     .size(48.dp)
@@ -736,12 +741,23 @@ private fun GenerateOptionItem(
                     ),
                 contentAlignment = Alignment.Center
             ) {
-                Icon(
-                    imageVector = icon,
-                    contentDescription = title,
-                    tint = Color(0xFF00B8FF),
-                    modifier = Modifier.size(24.dp)
-                )
+                if (imageRes != null) {
+                    Image(
+                        painter = painterResource(id = imageRes),
+                        contentDescription = title,
+                        modifier = Modifier
+                            .size(44.dp)
+                            .clip(RoundedCornerShape(10.dp)),
+                        contentScale = ContentScale.Crop
+                    )
+                } else if (icon != null) {
+                    Icon(
+                        imageVector = icon,
+                        contentDescription = title,
+                        tint = Color(0xFF00B8FF),
+                        modifier = Modifier.size(24.dp)
+                    )
+                }
             }
             
             Spacer(modifier = Modifier.width(16.dp))
