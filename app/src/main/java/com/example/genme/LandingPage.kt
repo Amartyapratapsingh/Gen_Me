@@ -235,28 +235,28 @@ private fun FeatureCarousel(
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
         FeatureCard(
-            imageUrl = "https://lh3.googleusercontent.com/aida-public/AB6AXuCHH3qXllSi35moGGMaAiou98gfqQRu72-6ZjKpzZWx1wd-_e-mWMmgAl1MxR3tRCyoIVs6jKmnBrcIow9Aau0PSd5k5XbBN9swpq9BL0xYkttrJmhFTJ-kaLaexXfQiPRWi3RBW32bOVrymSNcAowBNKotTz7JCASSJIX9Lj0WJ53NHXbyioJCOip2wN-8dqsspGF_UtIITgOm3zmP90mUwTTfWRT_cr8zcm2Wbl2XtjMTVQO4T_ELU-2Q2Wf7zxUqCU2INXOvAcI",
+            imageRes = R.drawable.cloth_changer_banner,
             label = "Try New Outfits",
             onClick = onOutfits,
             shape = cardShape,
             borderBrush = borderBrush
         )
         FeatureCard(
-            imageUrl = "https://lh3.googleusercontent.com/aida-public/AB6AXuDK8W95m5h3SoRf0HLmmoeyLyUb5xIaCPEIaKz67cIvyPn-oVM-99rNUGtOMhO5alcmEKCENlFx4GYkor5dMosqnuIPbfz3f2a0ql1ucy2mxJpYSuPZ-P81_4EJXbEGq_X6aCsvj3bm_Go96djdon29ABHQMmbxrVIWRbysawbEOe1hZ9c-NAKsEi2XMv7FdRXtCmRZ17TJ-dxnlgOs1kaGGpXsczRjETkAfFNKa0Wd80aLdeayBewMS2ciDtyS8Ftq4IyD5VWKLUY",
+            imageRes = R.drawable.hairstyle_changer_banner,
             label = "Change Hairstyle",
             onClick = onHairstyle,
             shape = cardShape,
             borderBrush = borderBrush
         )
         FeatureCard(
-            imageUrl = "https://images.unsplash.com/photo-1542909168-82c3e7fdca5c?w=500&h=600&fit=crop&crop=face",
+            imageRes = R.drawable.beard_maker_banner,
             label = "Beard Maker",
             onClick = onBeardMaker,
             shape = cardShape,
             borderBrush = borderBrush
         )
         FeatureCard(
-            imageUrl = "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=500&h=600&fit=crop&crop=face",
+            imageRes = R.drawable.age_changer_banner,
             label = "Age Changer",
             onClick = onAgeChanger,
             shape = cardShape,
@@ -267,7 +267,8 @@ private fun FeatureCarousel(
 
 @Composable
 private fun FeatureCard(
-    imageUrl: String,
+    imageUrl: String? = null,
+    imageRes: Int? = null,
     label: String,
     onClick: () -> Unit,
     shape: RoundedCornerShape,
@@ -284,12 +285,21 @@ private fun FeatureCard(
                 .border(width = 1.dp, brush = borderBrush, shape = shape)
                 .clip(shape)
         ) {
-            AsyncImage(
-                model = imageUrl,
-                contentDescription = label,
-                contentScale = ContentScale.Crop,
-                modifier = Modifier.fillMaxSize()
-            )
+            if (imageRes != null) {
+                Image(
+                    painter = painterResource(id = imageRes),
+                    contentDescription = label,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.fillMaxSize()
+                )
+            } else if (imageUrl != null) {
+                AsyncImage(
+                    model = imageUrl,
+                    contentDescription = label,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.fillMaxSize()
+                )
+            }
         }
         Spacer(Modifier.height(8.dp))
         Text(text = label, color = Color.White, fontSize = 16.sp, fontWeight = FontWeight.Medium)
@@ -307,12 +317,12 @@ private fun ToolsGrid(
     onFaceGen: () -> Unit
 ) {
     val items = listOf(
-        ToolItem("Cloth Changer", "https://lh3.googleusercontent.com/aida-public/AB6AXuByBrv5HWyaUW6dcqh6x24r6rKxTwd70UFFwQPhnbPyr1aKkUVm6EYmKeKIRKUWviR7cy9d95aqDIC9pimEmGeShKUZO7RRGFpPDPdC71ZfA3O0IxT1KEgVWyC3N02niqoKEcFwSZW_LoyZLVBDGdYDAtbmp_MHgH2DM5mTQb5bRiXIAwRcZu3Hkg5QKvcwVfHWVc-wiEFaTcSF1LtXPvruXn3wKE5d6ceuFoeWRijX1LMVrf8UKUQFedXDwVfs4ynHdKMfOJqrbOA", onCloth),
-        ToolItem("Hairstyle Changer", "https://lh3.googleusercontent.com/aida-public/AB6AXuBaThVtERU-QuL7WFIzM1qGp7bbh63c4aYpAlBewkTntAwe8M-O5Qi8DTkvk5B_K_KifruWkeGxUzLck2W6U5IzQq-Jfl7mEiAhJkVUHHP0A8MHLqU8HCh6YW02c9L6yLh3Juyhm7o0J_WV6sSKIFTt72LhXh6-R7xSnqIte4cl6IRwf7ESU_-6l8RJXMbjZeOrLELInWgBpAJEeaOTO2N1DDloamypwnXENfC6ZMyEEjyQ4_IDfI1RzymGuB7lC-xkEpzCkGPyywQ", onHair),
-        ToolItem("Background Changer", "https://lh3.googleusercontent.com/aida-public/AB6AXuBPjm2PnlRLSMgFsUUMJhmEn7KIPjJNulqvxf5ZA0_qaeNBJlU7Xons8vg7jNpH7pWUaHt5L841wDoQkbZsyhsNY3Hnz2JHxs14MmesDZwjRKmg6i3CW96q9cc89P48O3t4_5UUgruVWewZrfu8DaRHDI627kYJLed9QSxtxEail2sGwcPd10Be_2bp3wbU_VNjFTdyRVihB7j6YIUs3bF55y2C1m97ULfSvHfVCB2RZtGhPlfiPmbI8Kzf260ADEuANC4Q9a4O4no", onBackground),
-        ToolItem("Beard Maker", "https://images.unsplash.com/photo-1542909168-82c3e7fdca5c?w=100&h=100&fit=crop&crop=face", onAvatar),
-        ToolItem("Age Changer", "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop&crop=face", onFilters),
-        ToolItem("Face Generator", "https://lh3.googleusercontent.com/aida-public/AB6AXuCtjuaG_csFUAI4u4HEZhOSAv1ks69jxaxSO_IpPh9hhJ2k8CablgNv6_OjEkjr9HNKZ2tbYoyA2rdSmg0xA9P_-PUcq9JmMYNZ2fqZ8Qe0Vp3vUXG1a0UzZC8LsrxqdcecZsAiphg9yZiftWuJzDSRLAdPpIaiV9IVTEckY-cl208SZb_2y08-jN_gjMHXptFaLk0rxevDFkjrpYDJ6nBg0f3MXgeiuKYriSjescJPh3F6wrovkfA3p9E4mleLXqqVhcgEmFIvkSc", onFaceGen)
+        ToolItem("Cloth Changer", null, R.drawable.cloth_changer_banner, onCloth),
+        ToolItem("Hairstyle Changer", null, R.drawable.hairstyle_changer_banner, onHair),
+        ToolItem("Background Changer", "https://lh3.googleusercontent.com/aida-public/AB6AXuBPjm2PnlRLSMgFsUUMJhmEn7KIPjJNulqvxf5ZA0_qaeNBJlU7Xons8vg7jNpH7pWUaHt5L841wDoQkbZsyhsNY3Hnz2JHxs14MmesDZwjRKmg6i3CW96q9cc89P48O3t4_5UUgruVWewZrfu8DaRHDI627kYJLed9QSxtxEail2sGwcPd10Be_2bp3wbU_VNjFTdyRVihB7j6YIUs3bF55y2C1m97ULfSvHfVCB2RZtGhPlfiPmbI8Kzf260ADEuANC4Q9a4O4no", null, onBackground),
+        ToolItem("Beard Maker", null, R.drawable.beard_maker_banner, onAvatar),
+        ToolItem("Age Changer", null, R.drawable.age_changer_banner, onFilters),
+        ToolItem("Face Generator", "https://lh3.googleusercontent.com/aida-public/AB6AXuCtjuaG_csFUAI4u4HEZhOSAv1ks69jxaxSO_IpPh9hhJ2k8CablgNv6_OjEkjr9HNKZ2tbYoyA2rdSmg0xA9P_-PUcq9JmMYNZ2fqZ8Qe0Vp3vUXG1a0UzZC8LsrxqdcecZsAiphg9yZiftWuJzDSRLAdPpIaiV9IVTEckY-cl208SZb_2y08-jN_gjMHXptFaLk0rxevDFkjrpYDJ6nBg0f3MXgeiuKYriSjescJPh3F6wrovkfA3p9E4mleLXqqVhcgEmFIvkSc", null, onFaceGen)
     )
 
     Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
@@ -331,7 +341,7 @@ private fun ToolsGrid(
     }
 }
 
-private data class ToolItem(val title: String, val imageUrl: String, val onClick: () -> Unit)
+private data class ToolItem(val title: String, val imageUrl: String? = null, val imageRes: Int? = null, val onClick: () -> Unit)
 
 @Composable
 private fun ToolCard(item: ToolItem, borderBrush: Brush, modifier: Modifier = Modifier) {
@@ -346,12 +356,21 @@ private fun ToolCard(item: ToolItem, borderBrush: Brush, modifier: Modifier = Mo
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        AsyncImage(
-            model = item.imageUrl,
-            contentDescription = item.title,
-            modifier = Modifier.size(48.dp).clip(RoundedCornerShape(8.dp)),
-            contentScale = ContentScale.Crop
-        )
+        if (item.imageRes != null) {
+            Image(
+                painter = painterResource(id = item.imageRes),
+                contentDescription = item.title,
+                modifier = Modifier.size(48.dp).clip(RoundedCornerShape(8.dp)),
+                contentScale = ContentScale.Crop
+            )
+        } else if (item.imageUrl != null) {
+            AsyncImage(
+                model = item.imageUrl,
+                contentDescription = item.title,
+                modifier = Modifier.size(48.dp).clip(RoundedCornerShape(8.dp)),
+                contentScale = ContentScale.Crop
+            )
+        }
         Text(text = item.title, color = Color.White, fontWeight = FontWeight.SemiBold, fontSize = 14.sp)
     }
 }
