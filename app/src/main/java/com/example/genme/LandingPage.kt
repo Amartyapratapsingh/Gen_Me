@@ -98,7 +98,7 @@ fun LandingPage(navController: NavController) {
                 FeatureCarousel(
                     onOutfits = { navController.navigate("clothes_change") },
                     onHairstyle = { navController.navigate("hairstyle_change") },
-                    onAvatars = { navController.navigate("ghibli_art") },
+                    onBeardMaker = { navController.navigate("beard_maker") },
                     borderBrush = borderBrush
                 )
                 Text(
@@ -113,7 +113,7 @@ fun LandingPage(navController: NavController) {
                     onCloth = { navController.navigate("clothes_change") },
                     onHair = { navController.navigate("hairstyle_change") },
                     onBackground = { /* disabled: no navigation */ },
-                    onAvatar = { navController.navigate("ghibli_art") },
+                    onAvatar = { navController.navigate("beard_maker") },
                     onFilters = { /* disabled: no navigation */ },
                     onFaceGen = { /* disabled: no navigation */ }
                 )
@@ -176,7 +176,7 @@ private fun SearchBar() {
 private fun FeatureCarousel(
     onOutfits: () -> Unit,
     onHairstyle: () -> Unit,
-    onAvatars: () -> Unit,
+    onBeardMaker: () -> Unit,
     borderBrush: Brush
 ) {
     val cardShape = RoundedCornerShape(16.dp)
@@ -202,9 +202,9 @@ private fun FeatureCarousel(
             borderBrush = borderBrush
         )
         FeatureCard(
-            imageUrl = "https://lh3.googleusercontent.com/aida-public/AB6AXuDv-X7tNMvyTWEJs1Q7VofyWJkKRThqTKsMSGl4qffzU1Ds4Cu4EKY8wPTTK6WKwhACZlEFkH5gB6VF_pbXPsTvj-LVUFJhGt94RgjTTUdSfAGTmnBf9gpFDpUbnMBgRPgK2LBlfJBTvNq9nI4U7BMdB6M_e7GOkV-g5WQnNsJj8XC65oIY0SgUVtGmBIQKxwqyZNf-CvZk5tAp7TZ1cjis8u7qhCHCtRGbduPVsuMMMZvMPT-1Ko9CoeoixXIicXUVDP7E7Dz8Uc4",
-            label = "Generate AI Avatars",
-            onClick = onAvatars,
+            imageUrl = "https://images.unsplash.com/photo-1542909168-82c3e7fdca5c?w=500&h=600&fit=crop&crop=face",
+            label = "Beard Maker",
+            onClick = onBeardMaker,
             shape = cardShape,
             borderBrush = borderBrush
         )
@@ -256,7 +256,7 @@ private fun ToolsGrid(
         ToolItem("Cloth Changer", "https://lh3.googleusercontent.com/aida-public/AB6AXuByBrv5HWyaUW6dcqh6x24r6rKxTwd70UFFwQPhnbPyr1aKkUVm6EYmKeKIRKUWviR7cy9d95aqDIC9pimEmGeShKUZO7RRGFpPDPdC71ZfA3O0IxT1KEgVWyC3N02niqoKEcFwSZW_LoyZLVBDGdYDAtbmp_MHgH2DM5mTQb5bRiXIAwRcZu3Hkg5QKvcwVfHWVc-wiEFaTcSF1LtXPvruXn3wKE5d6ceuFoeWRijX1LMVrf8UKUQFedXDwVfs4ynHdKMfOJqrbOA", onCloth),
         ToolItem("Hairstyle Changer", "https://lh3.googleusercontent.com/aida-public/AB6AXuBaThVtERU-QuL7WFIzM1qGp7bbh63c4aYpAlBewkTntAwe8M-O5Qi8DTkvk5B_K_KifruWkeGxUzLck2W6U5IzQq-Jfl7mEiAhJkVUHHP0A8MHLqU8HCh6YW02c9L6yLh3Juyhm7o0J_WV6sSKIFTt72LhXh6-R7xSnqIte4cl6IRwf7ESU_-6l8RJXMbjZeOrLELInWgBpAJEeaOTO2N1DDloamypwnXENfC6ZMyEEjyQ4_IDfI1RzymGuB7lC-xkEpzCkGPyywQ", onHair),
         ToolItem("Background Changer", "https://lh3.googleusercontent.com/aida-public/AB6AXuBPjm2PnlRLSMgFsUUMJhmEn7KIPjJNulqvxf5ZA0_qaeNBJlU7Xons8vg7jNpH7pWUaHt5L841wDoQkbZsyhsNY3Hnz2JHxs14MmesDZwjRKmg6i3CW96q9cc89P48O3t4_5UUgruVWewZrfu8DaRHDI627kYJLed9QSxtxEail2sGwcPd10Be_2bp3wbU_VNjFTdyRVihB7j6YIUs3bF55y2C1m97ULfSvHfVCB2RZtGhPlfiPmbI8Kzf260ADEuANC4Q9a4O4no", onBackground),
-        ToolItem("AI Avatar", "https://lh3.googleusercontent.com/aida-public/AB6AXuBmcQ8w7pSONyGyw3kBA1Pyjg7Vak5RA8_j-Uh1VCPsTFjLm-h5yqzt9lHReaGowbTF2Eh0zi646dz-jUvFycDm9DlOEUapceRqB4-0OfnQQeTkEKSqslKpzkvUyGdC4ottH36IvYRT4KSl1E4LuwpJSK-5lndVt4qoffxOano_cOc7NC4bt9EzKVFNYHu08jidjbtj3jkgf3l9C0XaTGfu_7idapO317rYEbwjWkJua2o8tDdj3xgw3TRLaDNo7l275QaVMyYgKCE", onAvatar),
+        ToolItem("Beard Maker", "https://images.unsplash.com/photo-1542909168-82c3e7fdca5c?w=100&h=100&fit=crop&crop=face", onAvatar),
         ToolItem("Filters & Effects", "https://lh3.googleusercontent.com/aida-public/AB6AXuCex02vfyPcb2KWlS_DRDarjZMGpivKgrSX0_UxRY_2OkOztrFXzAnlu3GS8u6Q0QJbQzSS5qXg6Ud29-xCClW3S_hSZh3B83fChQAtiUg-QXSCtLclRhEYS9PCFD0U4bbdyPpJfIpSx3-y6Uyts0tJ_hMrk8EGgjTla5aLzhVVThKw0ur3FK6d1alOFvk6dpXbKYdEVGGSFWPio5UHh99nQRIARh1WFK-9GYyXnvcLRbGfXa1sxyHfk3ranusOA65zItpEChZW0n8", onFilters),
         ToolItem("Face Generator", "https://lh3.googleusercontent.com/aida-public/AB6AXuCtjuaG_csFUAI4u4HEZhOSAv1ks69jxaxSO_IpPh9hhJ2k8CablgNv6_OjEkjr9HNKZ2tbYoyA2rdSmg0xA9P_-PUcq9JmMYNZ2fqZ8Qe0Vp3vUXG1a0UzZC8LsrxqdcecZsAiphg9yZiftWuJzDSRLAdPpIaiV9IVTEckY-cl208SZb_2y08-jN_gjMHXptFaLk0rxevDFkjrpYDJ6nBg0f3MXgeiuKYriSjescJPh3F6wrovkfA3p9E4mleLXqqVhcgEmFIvkSc", onFaceGen)
     )

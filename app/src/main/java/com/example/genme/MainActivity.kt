@@ -35,6 +35,7 @@ import com.example.genme.ui.NeonGlassBottomNav
 import com.example.genme.ui.CoinPurchasePage
 import com.example.genme.ui.GenerateOptionsPopup
 import com.example.genme.ui.SplashScreen
+import com.example.genme.ui.BeardMakerPage
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -75,19 +76,20 @@ class MainActivity : ComponentActivity() {
                             }
                         }
                     ) { innerPadding ->
-                        NavHost(
-                            navController = navController,
-                            startDestination = "splash",
-                            modifier = Modifier.fillMaxSize().padding(innerPadding)
-                        ) {
-                            composable("splash") { SplashScreen(navController = navController) }
-                            composable("landing_page") { LandingPage(navController = navController) }
-                            composable("clothes_change") { ClothesChangePage(navController = navController) }
-                            composable("hairstyle_change") { HairstyleChangePage(navController = navController) }
-                            composable("ghibli_art") { GhibliArtPage(navController = navController) }
-                            composable("coins") { CoinPurchasePage(navController = navController) }
-                            composable("gallery") { GalleryScreen(viewModel = viewModel, navController = navController) }
-                            composable("settings") { SettingsPage(navController = navController, viewModel = viewModel) }
+                            NavHost(
+                                navController = navController,
+                                startDestination = "splash",
+                                modifier = Modifier.fillMaxSize().padding(innerPadding)
+                            ) {
+                                composable("splash") { SplashScreen(navController = navController) }
+                                composable("landing_page") { LandingPage(navController = navController) }
+                                composable("clothes_change") { ClothesChangePage(navController = navController) }
+                                composable("hairstyle_change") { HairstyleChangePage(navController = navController) }
+                                composable("ghibli_art") { GhibliArtPage(navController = navController) }
+                                composable("beard_maker") { BeardMakerPage(navController = navController) }
+                                composable("coins") { CoinPurchasePage(navController = navController) }
+                                composable("gallery") { GalleryScreen(viewModel = viewModel, navController = navController) }
+                                composable("settings") { SettingsPage(navController = navController, viewModel = viewModel) }
                             // profile route removed; use coins page instead via bottom nav
                             composable(
                                 "full_screen_image/{imagePath}",
@@ -106,7 +108,8 @@ class MainActivity : ComponentActivity() {
                             GenerateOptionsPopup(
                                 onDismiss = { showGeneratePopup = false },
                                 onGenerateOutfit = { navController.navigate("clothes_change") },
-                                onGenerateHairstyle = { navController.navigate("hairstyle_change") }
+                                onGenerateHairstyle = { navController.navigate("hairstyle_change") },
+                                onBeardMaker = { navController.navigate("beard_maker") }
                             )
                         }
                     }

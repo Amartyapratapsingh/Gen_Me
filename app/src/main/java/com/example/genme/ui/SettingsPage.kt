@@ -38,12 +38,15 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.genme.viewmodel.TryOnViewModel
+import androidx.compose.ui.platform.LocalContext
+import android.widget.Toast
 
 @Composable
 fun SettingsPage(
     navController: NavController,
     viewModel: TryOnViewModel
 ) {
+    val context = LocalContext.current
     val background = Color(0xFF111122)
     val glass = Color.White.copy(alpha = 0.05f)
     val border = Color.White.copy(alpha = 0.10f)
@@ -53,8 +56,8 @@ fun SettingsPage(
     val cyan = Color(0xFF00F5D4)
 
     var notificationsEnabled by remember { mutableStateOf(true) }
-    var selectedVersion by remember { mutableStateOf("Gen ME v1.3") }
-    var versionMenuExpanded by remember { mutableStateOf(false) }
+    var selectedModel by remember { mutableStateOf("1.3 Flash") }
+    var modelMenuExpanded by remember { mutableStateOf(false) }
 
     Box(
         modifier = Modifier
@@ -153,7 +156,7 @@ fun SettingsPage(
                                 Spacer(modifier = Modifier.width(12.dp))
                                 Box { // Title + badge overlay container
                                     Text(
-                                        text = "Gen ME Version",
+                                        text = "Gen ME Model",
                                         color = Color.White,
                                         fontSize = 16.sp,
                                         fontWeight = FontWeight.Medium
@@ -172,17 +175,60 @@ fun SettingsPage(
                             }
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
-                                modifier = Modifier.clickable { versionMenuExpanded = true }
+                                modifier = Modifier.clickable { modelMenuExpanded = true }
                             ) {
-                                Text(selectedVersion, color = Color(0xFFCBD5E1))
-                                Icon(Icons.Default.ArrowDropDown, contentDescription = null, tint = Color(0xFFCBD5E1))
-                                DropdownMenu(expanded = versionMenuExpanded, onDismissRequest = { versionMenuExpanded = false }) {
-                                    listOf("Gen ME v1.0", "Gen ME v1.2", "Gen ME v1.3").forEach { v ->
-                                        DropdownMenuItem(
-                                            text = { Text(v) },
-                                            onClick = { selectedVersion = v; versionMenuExpanded = false }
-                                        )
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Text(selectedModel, color = Color(0xFFCBD5E1))
+                                    if (selectedModel == "1.3 Pro") {
+                                        Spacer(modifier = Modifier.width(8.dp))
+                                        Box(
+                                            modifier = Modifier
+                                                .clip(RoundedCornerShape(4.dp))
+                                                .background(Color(0xFFFF6B35))
+                                                .padding(horizontal = 6.dp, vertical = 2.dp)
+                                        ) {
+                                            Text(
+                                                text = "PAID",
+                                                color = Color.White,
+                                                fontSize = 10.sp,
+                                                fontWeight = FontWeight.Bold
+                                            )
+                                        }
                                     }
+                                }
+                                Icon(Icons.Default.ArrowDropDown, contentDescription = null, tint = Color(0xFFCBD5E1))
+                                DropdownMenu(expanded = modelMenuExpanded, onDismissRequest = { modelMenuExpanded = false }) {
+                                    DropdownMenuItem(
+                                        text = { Text("1.3 Flash") },
+                                        onClick = { selectedModel = "1.3 Flash"; modelMenuExpanded = false }
+                                    )
+                                    DropdownMenuItem(
+                                        text = { 
+                                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                                Text("1.3 Pro")
+                                                Spacer(modifier = Modifier.width(8.dp))
+                                                Box(
+                                                    modifier = Modifier
+                                                        .clip(RoundedCornerShape(4.dp))
+                                                        .background(Color(0xFFFF6B35))
+                                                        .padding(horizontal = 6.dp, vertical = 2.dp)
+                                                ) {
+                                                    Text(
+                                                        text = "PAID",
+                                                        color = Color.White,
+                                                        fontSize = 10.sp,
+                                                        fontWeight = FontWeight.Bold
+                                                    )
+                                                }
+                                            }
+                                        },
+                                        onClick = { 
+                                            modelMenuExpanded = false
+                                            // Show message and navigate to coin purchase page
+                                            Toast.makeText(context, "Buy the subscription", Toast.LENGTH_SHORT).show()
+                                            navController.navigate("coins")
+                                        }
+                                    )
                                 }
                             }
                         }

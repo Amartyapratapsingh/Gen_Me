@@ -568,7 +568,8 @@ private fun NeonCenterGenerateItem(
 fun GenerateOptionsPopup(
     onDismiss: () -> Unit,
     onGenerateOutfit: () -> Unit,
-    onGenerateHairstyle: () -> Unit
+    onGenerateHairstyle: () -> Unit,
+    onBeardMaker: () -> Unit
 ) {
     // Backdrop
     Box(
@@ -588,17 +589,17 @@ fun GenerateOptionsPopup(
             // Main Popup Card
             Card(
                 modifier = Modifier
-                    .width(280.dp)
+                    .width(240.dp)
                     .wrapContentHeight()
                     .clickable { }, // Prevent backdrop click from closing
-                shape = RoundedCornerShape(20.dp),
+                shape = RoundedCornerShape(16.dp),
                 colors = CardDefaults.cardColors(
                     containerColor = Color(0xFF1A1A2E)
                 ),
                 elevation = CardDefaults.cardElevation(defaultElevation = 20.dp)
             ) {
             Column(
-                modifier = Modifier.padding(20.dp)
+                modifier = Modifier.padding(12.dp)
             ) {
                 // Header with title and close button
                 Row(
@@ -621,28 +622,41 @@ fun GenerateOptionsPopup(
                     }
                 }
                 
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(6.dp))
                 
                 // Generate Outfit Option
                 GenerateOptionItem(
                     icon = ImageVector.vectorResource(id = R.drawable.ic_clothing),
                     title = "Generate Outfit",
-                    subtitle = "Create a new outfit from scratch",
+                    subtitle = "Create a new outfit",
                     onClick = {
                         onGenerateOutfit()
                         onDismiss()
                     }
                 )
                 
-                Spacer(modifier = Modifier.height(12.dp))
+                Spacer(modifier = Modifier.height(6.dp))
                 
                 // Generate Hairstyle Option
                 GenerateOptionItem(
                     icon = Icons.Default.AutoAwesome,
                     title = "Generate Hairstyle", 
-                    subtitle = "Try on a new hairstyle",
+                    subtitle = "Try new hairstyles",
                     onClick = {
                         onGenerateHairstyle()
+                        onDismiss()
+                    }
+                )
+                
+                Spacer(modifier = Modifier.height(6.dp))
+                
+                // Beard Maker Option
+                GenerateOptionItem(
+                    icon = Icons.Default.Person,
+                    title = "Beard Maker",
+                    subtitle = "Try different beard styles",
+                    onClick = {
+                        onBeardMaker()
                         onDismiss()
                     }
                 )
