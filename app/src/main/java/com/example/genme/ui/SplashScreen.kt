@@ -129,14 +129,16 @@ fun SplashScreen(navController: NavController) {
                         .background(Color.White.copy(alpha = 0.02f))
                 )
 
-                Box(modifier = Modifier.align(Alignment.Center)) {
+                Box(
+                    modifier = Modifier.align(Alignment.Center),
+                    contentAlignment = Alignment.Center
+                ) {
                     androidx.compose.foundation.Image(
-                        painter = painterResource(id = com.example.genme.R.drawable.genme_logo),
+                        painter = painterResource(id = com.example.genme.R.drawable.logo_circle_clean),
                         contentDescription = "Gen ME Logo",
-                        contentScale = ContentScale.Crop,
+                        contentScale = ContentScale.Fit,
                         modifier = Modifier
                             .size(170.dp)
-                            .clip(CircleShape)
                     )
                 }
             }
