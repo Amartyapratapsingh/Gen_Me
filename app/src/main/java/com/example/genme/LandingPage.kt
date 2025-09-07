@@ -22,7 +22,9 @@ import androidx.compose.material.icons.filled.Face
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.foundation.border
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.foundation.layout.WindowInsets
@@ -93,7 +95,7 @@ fun LandingPage(navController: NavController) {
                     .weight(1f)
                     .verticalScroll(rememberScrollState())
             ) {
-                TopHeader(onSettings = { navController.navigate("settings") })
+                TopHeader(onCoins = { navController.navigate("coins") })
                 SearchBar()
                 FeatureCarousel(
                     onOutfits = { navController.navigate("clothes_change") },
@@ -126,7 +128,7 @@ fun LandingPage(navController: NavController) {
 }
 
 @Composable
-private fun TopHeader(onSettings: () -> Unit) {
+private fun TopHeader(onCoins: () -> Unit) {
     Row(
         modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -141,8 +143,51 @@ private fun TopHeader(onSettings: () -> Unit) {
             textAlign = TextAlign.Center,
             modifier = Modifier.weight(1f).padding(horizontal = 8.dp)
         )
-        IconButton(onClick = onSettings, modifier = Modifier.size(40.dp)) {
-            Icon(imageVector = Icons.Filled.Settings, contentDescription = "Settings", tint = Color.White)
+        
+        // Coin Display
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(6.dp),
+            modifier = Modifier
+                .clickable { onCoins() }
+                .padding(8.dp)
+        ) {
+            // Coin Icon
+            Box(
+                modifier = Modifier
+                    .size(24.dp)
+                    .background(
+                        Brush.radialGradient(
+                            colors = listOf(Color(0xFFFFD700), Color(0xFFFF8C00))
+                        ),
+                        shape = CircleShape
+                    )
+                    .border(1.dp, Color(0xFFFF8C00), CircleShape),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = "G",
+                    color = Color.Black,
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+            
+            // Coin Count
+            Text(
+                text = "9999",
+                color = Color.White,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Bold
+            )
+            
+            // Add Icon
+            Icon(
+                imageVector = Icons.Default.Add,
+                contentDescription = "Add coins",
+                tint = Color.White,
+                modifier = Modifier.size(20.dp)
+            )
         }
     }
 }

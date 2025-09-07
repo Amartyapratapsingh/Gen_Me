@@ -117,8 +117,8 @@ fun CoinPurchasePage(navController: NavController) {
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 CoinPackageCard(
-                    title = "100 Coins",
-                    price = "$9.99",
+                    title = "500 Gen Coin",
+                    price = "₹49",
                     primaryAccent = primaryAccent,
                     secondaryAccent = secondaryAccent,
                     tertiaryAccent = tertiaryAccent,
@@ -130,8 +130,8 @@ fun CoinPurchasePage(navController: NavController) {
                 // Popular
                 Box {
                     CoinPackageCard(
-                        title = "500 Coins",
-                        price = "$44.99",
+                        title = "1000 Gen Coin",
+                        price = "₹99.9",
                         primaryAccent = primaryAccent,
                         secondaryAccent = secondaryAccent,
                         tertiaryAccent = tertiaryAccent,
@@ -161,8 +161,8 @@ fun CoinPurchasePage(navController: NavController) {
                 }
 
                 CoinPackageCard(
-                    title = "1000 Coins",
-                    price = "$79.99",
+                    title = "5000 Gen Coin",
+                    price = "₹499.9",
                     primaryAccent = primaryAccent,
                     secondaryAccent = secondaryAccent,
                     tertiaryAccent = tertiaryAccent,
