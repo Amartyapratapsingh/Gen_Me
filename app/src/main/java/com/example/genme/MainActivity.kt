@@ -34,6 +34,7 @@ import com.example.genme.ui.SettingsPage
 import com.example.genme.ui.NeonGlassBottomNav
 import com.example.genme.ui.CoinPurchasePage
 import com.example.genme.ui.GenerateOptionsPopup
+import com.example.genme.ui.SplashScreen
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -63,21 +64,23 @@ class MainActivity : ComponentActivity() {
                     var showGeneratePopup by remember { mutableStateOf(false) }
 
                     Box(modifier = Modifier.fillMaxSize()) {
-                        Scaffold(
-                            bottomBar = {
-                                // Use the working dark navigation implementation
+                    Scaffold(
+                        bottomBar = {
+                            if (currentRoute != "splash") {
                                 NeonGlassBottomNav(
                                     navController = navController,
                                     currentRoute = currentRoute,
                                     onShowGeneratePopup = { showGeneratePopup = true }
                                 )
                             }
-                        ) { innerPadding ->
+                        }
+                    ) { innerPadding ->
                         NavHost(
                             navController = navController,
-                            startDestination = "landing_page",
+                            startDestination = "splash",
                             modifier = Modifier.fillMaxSize().padding(innerPadding)
                         ) {
+                            composable("splash") { SplashScreen(navController = navController) }
                             composable("landing_page") { LandingPage(navController = navController) }
                             composable("clothes_change") { ClothesChangePage(navController = navController) }
                             composable("hairstyle_change") { HairstyleChangePage(navController = navController) }
