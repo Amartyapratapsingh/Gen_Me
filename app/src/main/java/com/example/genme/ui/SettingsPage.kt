@@ -56,7 +56,7 @@ fun SettingsPage(
     val cyan = Color(0xFF00F5D4)
 
     var notificationsEnabled by remember { mutableStateOf(true) }
-    var selectedModel by remember { mutableStateOf("1.3 Flash") }
+    var selectedModel by remember { mutableStateOf("1.4 Flash") }
     var modelMenuExpanded by remember { mutableStateOf(false) }
 
     Box(
@@ -179,7 +179,7 @@ fun SettingsPage(
                             ) {
                                 Row(verticalAlignment = Alignment.CenterVertically) {
                                     Text(selectedModel, color = Color(0xFFCBD5E1))
-                                    if (selectedModel == "1.3 Pro") {
+                                    if (selectedModel == "1.4 Pro") {
                                         Spacer(modifier = Modifier.width(8.dp))
                                         Box(
                                             modifier = Modifier
@@ -199,13 +199,13 @@ fun SettingsPage(
                                 Icon(Icons.Default.ArrowDropDown, contentDescription = null, tint = Color(0xFFCBD5E1))
                                 DropdownMenu(expanded = modelMenuExpanded, onDismissRequest = { modelMenuExpanded = false }) {
                                     DropdownMenuItem(
-                                        text = { Text("1.3 Flash") },
-                                        onClick = { selectedModel = "1.3 Flash"; modelMenuExpanded = false }
+                                        text = { Text("1.4 Flash") },
+                                        onClick = { selectedModel = "1.4 Flash"; modelMenuExpanded = false }
                                     )
                                     DropdownMenuItem(
                                         text = { 
                                             Row(verticalAlignment = Alignment.CenterVertically) {
-                                                Text("1.3 Pro")
+                                                Text("1.4 Pro")
                                                 Spacer(modifier = Modifier.width(8.dp))
                                                 Box(
                                                     modifier = Modifier
@@ -274,14 +274,14 @@ fun SettingsPage(
                         iconGradient = Brush.linearGradient(listOf(cyan, blue)),
                         icon = Icons.Default.HelpOutline,
                         title = "Help Center",
-                        onClick = { /* TODO */ }
+                        onClick = { navController.navigate("help_center") }
                     )
                     Divider(color = Color.White.copy(alpha = 0.10f))
                     NavRow(
                         iconGradient = Brush.linearGradient(listOf(cyan, blue)),
                         icon = Icons.Default.Email,
                         title = "Contact Us",
-                        onClick = { /* TODO */ }
+                        onClick = { navController.navigate("help_center") }
                     )
                 }
 
@@ -406,4 +406,3 @@ private fun NavRow(
         }
     }
 }
-

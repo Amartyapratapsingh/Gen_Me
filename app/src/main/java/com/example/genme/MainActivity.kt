@@ -31,10 +31,12 @@ import androidx.navigation.NavType
 import androidx.navigation.navArgument
 import com.example.genme.ui.FullScreenImageViewer
 import com.example.genme.ui.SettingsPage
+import com.example.genme.ui.HelpCenterPage
 import com.example.genme.ui.NeonGlassBottomNav
 import com.example.genme.ui.CoinPurchasePage
 import com.example.genme.ui.GenerateOptionsPopup
 import com.example.genme.ui.SplashScreen
+import com.example.genme.ui.ThreeDDiginerPage
 import com.example.genme.ui.BeardMakerPage
 import com.example.genme.ui.AgeChangerPage
 
@@ -89,9 +91,11 @@ class MainActivity : ComponentActivity() {
                                 composable("ghibli_art") { GhibliArtPage(navController = navController) }
                                 composable("beard_maker") { BeardMakerPage(navController = navController) }
                                 composable("age_changer") { AgeChangerPage(navController = navController) }
+                                composable("3d_diginer") { ThreeDDiginerPage(navController = navController) }
                                 composable("coins") { CoinPurchasePage(navController = navController) }
                                 composable("gallery") { GalleryScreen(viewModel = viewModel, navController = navController) }
                                 composable("settings") { SettingsPage(navController = navController, viewModel = viewModel) }
+                                composable("help_center") { HelpCenterPage(navController = navController) }
                             // profile route removed; use coins page instead via bottom nav
                             composable(
                                 "full_screen_image/{imagePath}",
@@ -112,7 +116,8 @@ class MainActivity : ComponentActivity() {
                                 onGenerateOutfit = { navController.navigate("clothes_change") },
                                 onGenerateHairstyle = { navController.navigate("hairstyle_change") },
                                 onBeardMaker = { navController.navigate("beard_maker") },
-                                onAgeChanger = { navController.navigate("age_changer") }
+                                onAgeChanger = { navController.navigate("age_changer") },
+                                on3DDesigner = { navController.navigate("3d_diginer") }
                             )
                         }
                     }

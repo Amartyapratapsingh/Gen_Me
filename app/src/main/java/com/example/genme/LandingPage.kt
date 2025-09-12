@@ -27,6 +27,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
+import androidx.compose.ui.graphics.Color
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.only
@@ -102,6 +103,7 @@ fun LandingPage(navController: NavController) {
                     onHairstyle = { navController.navigate("hairstyle_change") },
                     onBeardMaker = { navController.navigate("beard_maker") },
                     onAgeChanger = { navController.navigate("age_changer") },
+                    on3DDesigner = { navController.navigate("3d_diginer") },
                     borderBrush = borderBrush
                 )
                 Text(
@@ -118,7 +120,7 @@ fun LandingPage(navController: NavController) {
                     onBackground = { /* disabled: no navigation */ },
                     onAvatar = { navController.navigate("beard_maker") },
                     onFilters = { navController.navigate("age_changer") },
-                    onFaceGen = { /* disabled: no navigation */ }
+                    on3DDiginer = { navController.navigate("3d_diginer") }
                 )
                 Spacer(Modifier.height(12.dp))
             }
@@ -176,7 +178,7 @@ private fun TopHeader(onCoins: () -> Unit) {
             // Coin Count
             Text(
                 text = "9999",
-                color = Color.White,
+                color = Color.Yellow,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Bold
             )
@@ -224,6 +226,7 @@ private fun FeatureCarousel(
     onHairstyle: () -> Unit,
     onBeardMaker: () -> Unit,
     onAgeChanger: () -> Unit,
+    on3DDesigner: () -> Unit,
     borderBrush: Brush
 ) {
     val cardShape = RoundedCornerShape(16.dp)
@@ -259,6 +262,13 @@ private fun FeatureCarousel(
             imageRes = R.drawable.age_changer_banner,
             label = "Age Changer",
             onClick = onAgeChanger,
+            shape = cardShape,
+            borderBrush = borderBrush
+        )
+        FeatureCard(
+            imageRes = R.drawable.three_d_designer_banner,
+            label = "3D Designer",
+            onClick = on3DDesigner,
             shape = cardShape,
             borderBrush = borderBrush
         )
@@ -314,7 +324,7 @@ private fun ToolsGrid(
     onBackground: () -> Unit,
     onAvatar: () -> Unit,
     onFilters: () -> Unit,
-    onFaceGen: () -> Unit
+    on3DDiginer: () -> Unit
 ) {
     val items = listOf(
         ToolItem("Cloth Changer", null, R.drawable.cloth_changer_banner, onCloth),
@@ -322,7 +332,7 @@ private fun ToolsGrid(
         ToolItem("Background Changer", "https://lh3.googleusercontent.com/aida-public/AB6AXuBPjm2PnlRLSMgFsUUMJhmEn7KIPjJNulqvxf5ZA0_qaeNBJlU7Xons8vg7jNpH7pWUaHt5L841wDoQkbZsyhsNY3Hnz2JHxs14MmesDZwjRKmg6i3CW96q9cc89P48O3t4_5UUgruVWewZrfu8DaRHDI627kYJLed9QSxtxEail2sGwcPd10Be_2bp3wbU_VNjFTdyRVihB7j6YIUs3bF55y2C1m97ULfSvHfVCB2RZtGhPlfiPmbI8Kzf260ADEuANC4Q9a4O4no", null, onBackground),
         ToolItem("Beard Maker", null, R.drawable.beard_maker_banner, onAvatar),
         ToolItem("Age Changer", null, R.drawable.age_changer_banner, onFilters),
-        ToolItem("Face Generator", "https://lh3.googleusercontent.com/aida-public/AB6AXuCtjuaG_csFUAI4u4HEZhOSAv1ks69jxaxSO_IpPh9hhJ2k8CablgNv6_OjEkjr9HNKZ2tbYoyA2rdSmg0xA9P_-PUcq9JmMYNZ2fqZ8Qe0Vp3vUXG1a0UzZC8LsrxqdcecZsAiphg9yZiftWuJzDSRLAdPpIaiV9IVTEckY-cl208SZb_2y08-jN_gjMHXptFaLk0rxevDFkjrpYDJ6nBg0f3MXgeiuKYriSjescJPh3F6wrovkfA3p9E4mleLXqqVhcgEmFIvkSc", null, onFaceGen)
+        ToolItem("3D Designer", null, R.drawable.three_d_designer_banner, on3DDiginer)
     )
 
     Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {

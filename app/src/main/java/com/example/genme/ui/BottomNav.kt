@@ -575,7 +575,8 @@ fun GenerateOptionsPopup(
     onGenerateOutfit: () -> Unit,
     onGenerateHairstyle: () -> Unit,
     onBeardMaker: () -> Unit,
-    onAgeChanger: () -> Unit
+    onAgeChanger: () -> Unit,
+    on3DDesigner: () -> Unit
 ) {
     // Backdrop
     Box(
@@ -676,6 +677,19 @@ fun GenerateOptionsPopup(
                     subtitle = "Change age in photos",
                     onClick = {
                         onAgeChanger()
+                        onDismiss()
+                    }
+                )
+                
+                Spacer(modifier = Modifier.height(6.dp))
+                
+                // 3D Designer Option
+                GenerateOptionItem(
+                    imageRes = R.drawable.three_d_designer_banner,
+                    title = "3D Designer",
+                    subtitle = "Create 3D figurines",
+                    onClick = {
+                        on3DDesigner()
                         onDismiss()
                     }
                 )

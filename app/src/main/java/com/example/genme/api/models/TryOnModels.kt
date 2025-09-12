@@ -23,6 +23,16 @@ data class HairstyleStartResponse(
 )
 
 /**
+ * Response model for starting a 3D figurine job
+ */
+data class FigurineStartResponse(
+    @SerializedName("task_id")
+    val taskId: String,
+    @SerializedName("status")
+    val status: String = "processing"
+)
+
+/**
  * Response model for checking job status
  */
 data class TryOnStatusResponse(
@@ -33,7 +43,14 @@ data class TryOnStatusResponse(
     @SerializedName("message")
     val message: String? = null,
     @SerializedName("error")
-    val error: String? = null
+    val error: String? = null,
+    @SerializedName(value = "result_url", alternate = [
+        "result",
+        "image_url",
+        "url",
+        "output_url"
+    ])
+    val resultUrl: String? = null
 )
 
 /**
@@ -61,4 +78,3 @@ data class ApiErrorResponse(
     @SerializedName("error")
     val error: String? = null
 )
-
